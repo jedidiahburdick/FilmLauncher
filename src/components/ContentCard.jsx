@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ContentCard.css';
 
 const GRADIENT_COLORS = [
@@ -10,7 +11,8 @@ const GRADIENT_COLORS = [
   'linear-gradient(160deg, #0f1a1a 0%, #0a1212 100%)',
 ];
 
-export default function ContentCard({ item, onSelect }) {
+export default function ContentCard({ item }) {
+  const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -20,9 +22,11 @@ export default function ContentCard({ item, onSelect }) {
     ? Math.round((item.fundingRaised / item.fundingGoal) * 100)
     : null;
 
+  const handleSelect = () => navigate(`/film/${item.id}`);
+
   return (
-    <article className="card" onClick={() => onSelect(item)} tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onSelect(item)} role="button" aria-label={item.title}>
+    <article className="card" onClick={handleSelect} tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && handleSelect()} role="button" aria-label={item.title}>
 
       {/* Poster */}
       <div className="card__poster-wrap">

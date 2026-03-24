@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logoSrc from '../assets/FL-logo.png';
 import './Navbar.css';
 
 const NAV_ITEMS = ['Home', 'Movies', 'Series', 'Fund a Film', 'My Watchlist'];
 
+const FILTER_MAP = { Home: 'all', Movies: 'movies', Series: 'series', 'Fund a Film': 'funding' };
+
 export default function Navbar({ onFilterChange, activeFilter }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const onDetailPage = location.pathname.startsWith('/film/');
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -14,11 +21,30 @@ export default function Navbar({ onFilterChange, activeFilter }) {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  const handleNavClick = (item) => {
+    const filter = FILTER_MAP[item];
+    if (filter) {
+      onFilterChange(filter);
+      if (onDetailPage) navigate('/');
+    }
+    setMenuOpen(false);
+  };
+
+  const isActive = (item) => {
+    if (onDetailPage) return false;
+    return (
+      (item === 'Home' && activeFilter === 'all') ||
+      (item === 'Movies' && activeFilter === 'movies') ||
+      (item === 'Series' && activeFilter === 'series') ||
+      (item === 'Fund a Film' && activeFilter === 'funding')
+    );
+  };
+
   return (
     <nav className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner">
         {/* Logo */}
-        <button className="navbar__logo" onClick={() => onFilterChange('all')}>
+        <button className="navbar__logo" onClick={() => { onFilterChange('all'); navigate('/'); }}>
           <img src={logoSrc} alt="FilmLauncher" className="navbar__logo-img" />
         </button>
 
@@ -27,19 +53,8 @@ export default function Navbar({ onFilterChange, activeFilter }) {
           {NAV_ITEMS.map((item) => (
             <li key={item}>
               <button
-                className={`navbar__link ${
-                  (item === 'Home' && activeFilter === 'all') ||
-                  (item === 'Movies' && activeFilter === 'movies') ||
-                  (item === 'Series' && activeFilter === 'series') ||
-                  (item === 'Fund a Film' && activeFilter === 'funding')
-                    ? 'navbar__link--active'
-                    : ''
-                }`}
-                onClick={() => {
-                  const map = { Home: 'all', Movies: 'movies', Series: 'series', 'Fund a Film': 'funding' };
-                  if (map[item]) onFilterChange(map[item]);
-                  setMenuOpen(false);
-                }}
+                className={`navbar__link ${isActive(item) ? 'navbar__link--active' : ''}`}
+                onClick={() => handleNavClick(item)}
               >
                 {item}
               </button>

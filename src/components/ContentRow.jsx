@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import ContentCard from './ContentCard';
 import './ContentRow.css';
 
-export default function ContentRow({ label, items, onSelect }) {
+export default function ContentRow({ label, items }) {
   const trackRef = useRef(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
@@ -47,7 +47,7 @@ export default function ContentRow({ label, items, onSelect }) {
           onScroll={updateArrows}
         >
           {items.map((item) => (
-            <ContentCard key={item.id} item={item} onSelect={onSelect} />
+            <ContentCard key={item.id} item={item} />
           ))}
         </div>
 

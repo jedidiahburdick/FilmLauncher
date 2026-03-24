@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Hero.css';
 
 const TypeBadge = ({ type }) =>
@@ -18,7 +19,8 @@ const TypeBadge = ({ type }) =>
     </span>
   );
 
-export default function Hero({ item, onSelect }) {
+export default function Hero({ item }) {
+  const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -29,6 +31,8 @@ export default function Hero({ item, onSelect }) {
   const fundingPct = item.type === 'funding'
     ? Math.round((item.fundingRaised / item.fundingGoal) * 100)
     : null;
+
+  const goToDetail = () => navigate(`/film/${item.id}`);
 
   return (
     <section className="hero">
@@ -98,21 +102,21 @@ export default function Hero({ item, onSelect }) {
         <div className="hero__actions">
           {item.type === 'streaming' ? (
             <>
-              <button className="btn btn--primary" onClick={() => onSelect(item)}>
+              <button className="btn btn--primary" onClick={goToDetail}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 Play Now
               </button>
-              <button className="btn btn--secondary" onClick={() => onSelect(item)}>
+              <button className="btn btn--secondary" onClick={goToDetail}>
                 More Info
               </button>
             </>
           ) : (
             <>
-              <button className="btn btn--gold" onClick={() => onSelect(item)}>
+              <button className="btn btn--gold" onClick={goToDetail}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 Back This Film
               </button>
-              <button className="btn btn--secondary" onClick={() => onSelect(item)}>
+              <button className="btn btn--secondary" onClick={goToDetail}>
                 View Campaign
               </button>
             </>

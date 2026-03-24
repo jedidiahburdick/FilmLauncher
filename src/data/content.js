@@ -1,3 +1,5 @@
+import pilgrimsImg from '../assets/pilgrims-progress.png';
+
 const T = 'https://media.themoviedb.org/t/p/w500';
 const TB = 'https://media.themoviedb.org/t/p/original';
 
@@ -524,6 +526,26 @@ export const allContent = [
     awards: ['Emmy Award Best Limited Series', 'Golden Globe Winner'],
     rows: ['series', 'award-winners', 'trending'],
   },
+  // ─── PILGRIM'S PROGRESS ──────────────────────────────────────────────────────
+  {
+    id: 27,
+    title: "Pilgrim's Progress",
+    tagline: 'The burden is heavy. The road is long. The hope is real.',
+    description:
+      "Adapted from John Bunyan's beloved 17th-century allegory, this sweeping cinematic epic follows Christian — a man crushed beneath the weight of his sins — on a harrowing and wondrous journey from the City of Destruction to the Celestial City. Crossing valleys of shadow, climbing mountains of despair, and facing giants who seek to destroy him, his path becomes a timeless meditation on faith, perseverance, and the enduring light that guides the lost home.",
+    type: 'streaming',
+    year: 2024,
+    rating: 'PG',
+    duration: '2h 24m',
+    genre: ['Epic', 'Drama', 'Allegory'],
+    director: 'Robert Fernandez',
+    cast: ['Ben Price', 'Kristyn Getty', 'John Rhys-Davies', 'David Thorpe'],
+    poster: pilgrimsImg,
+    backdrop: pilgrimsImg,
+    matchScore: 96,
+    awards: ["Critics' Choice Selection", 'Heartland Film Festival Winner'],
+    rows: ['featured', 'trending', 'new-releases'],
+  },
   // ─── MORE FUNDING ────────────────────────────────────────────────────────────
   {
     id: 26,
@@ -562,4 +584,4 @@ export const rows = [
   { id: 'new-releases',   label: 'New Releases',              filter: (c) => c.rows.includes('new-releases') },
 ];
 
-export const heroContent = allContent.find((c) => c.id === 1); // Oppenheimer as hero (confirmed backdrop works)
+export const heroContent = allContent.find((c) => c.id === 27); // Pilgrim's Progress as hero

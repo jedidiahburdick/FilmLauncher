@@ -1,15 +1,13 @@
 import React, { useState, useMemo } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ContentRow from './components/ContentRow';
-import DetailModal from './components/DetailModal';
+import DetailPage from './pages/DetailPage';
 import { allContent, rows, heroContent } from './data/content';
 import './App.css';
 
-export default function App() {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('all');
-
+function BrowsePage({ activeFilter }) {
   const filteredRows = useMemo(() => {
     if (activeFilter === 'all') return rows;
     if (activeFilter === 'movies') {
@@ -31,7 +29,6 @@ export default function App() {
     return rows;
   }, [activeFilter]);
 
-  // Hero item: if filter is funding, show a funding item; else show default
   const heroItem = useMemo(() => {
     if (activeFilter === 'funding') {
       return allContent.find((c) => c.type === 'funding' && c.rows.includes('featured')) || allContent.find((c) => c.type === 'funding');
@@ -40,13 +37,9 @@ export default function App() {
   }, [activeFilter]);
 
   return (
-    <div className="app">
-      <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />
+    <>
+      <Hero item={heroItem} />
 
-      {/* Hero */}
-      <Hero item={heroItem} onSelect={setSelectedItem} />
-
-      {/* Content rows */}
       <main className="app__main">
         {filteredRows.map((row) => {
           const items = allContent.filter(row.filter);
@@ -55,13 +48,11 @@ export default function App() {
               key={row.id}
               label={row.label}
               items={items}
-              onSelect={setSelectedItem}
             />
           );
         })}
       </main>
 
-      {/* Footer */}
       <footer className="app__footer">
         <div className="footer__inner">
           <p className="footer__logo">FILM<span>LAUNCHER</span></p>
@@ -77,11 +68,21 @@ export default function App() {
           <p className="footer__copy">© 2025 FilmLauncher. All rights reserved.</p>
         </div>
       </footer>
+    </>
+  );
+}
 
-      {/* Modal */}
-      {selectedItem && (
-        <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-      )}
+export default function App() {
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  return (
+    <div className="app">
+      <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />
+
+      <Routes>
+        <Route path="/" element={<BrowsePage activeFilter={activeFilter} />} />
+        <Route path="/film/:id" element={<DetailPage />} />
+      </Routes>
     </div>
   );
 }

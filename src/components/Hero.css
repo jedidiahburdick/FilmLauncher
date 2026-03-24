@@ -93,28 +93,6 @@
   margin-bottom: 18px;
 }
 
-/* Badges */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  padding: 5px 10px;
-  border-radius: 4px;
-}
-.badge--streaming {
-  background: var(--blue-dim);
-  color: var(--blue);
-  border: 1px solid rgba(74,158,255,0.3);
-}
-.badge--funding {
-  background: var(--gold-dim);
-  color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.35);
-}
-
 .hero__year, .hero__rating, .hero__duration {
   font-size: 12px;
   color: var(--text-2);
@@ -233,47 +211,6 @@
   gap: 12px;
   margin-bottom: 24px;
   flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 12px 26px;
-  border-radius: 8px;
-  border: none;
-  transition: all var(--transition);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.btn--primary {
-  background: white;
-  color: black;
-}
-.btn--primary:hover { background: rgba(255,255,255,0.85); transform: translateY(-1px); }
-
-.btn--secondary {
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-}
-.btn--secondary:hover {
-  background: rgba(255,255,255,0.18);
-  border-color: rgba(255,255,255,0.35);
-  transform: translateY(-1px);
-}
-
-.btn--gold {
-  background: var(--gold);
-  color: #0a0a0a;
-}
-.btn--gold:hover {
-  background: var(--gold-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(201,168,76,0.4);
 }
 
 /* Awards */
