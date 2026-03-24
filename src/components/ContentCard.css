@@ -1,0 +1,181 @@
+.card {
+  flex-shrink: 0;
+  width: 200px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  overflow: visible;
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  outline: none;
+}
+.card:hover { transform: scale(1.06) translateY(-4px); z-index: 10; }
+.card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: var(--radius);
+}
+
+/* Poster */
+.card__poster-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+.card__poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.card__poster--loaded { opacity: 1; }
+
+.card__poster-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px 12px;
+}
+.card__poster-fallback-title {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.3;
+}
+
+/* Overlay */
+.card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 40%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card:hover .card__overlay { opacity: 1; }
+
+.card__overlay-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card__play {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  transform: scale(0.8);
+  opacity: 0;
+}
+.card:hover .card__play {
+  transform: scale(1);
+  opacity: 1;
+}
+.card__play:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: white;
+  transform: scale(1.1) !important;
+}
+
+/* Badge */
+.card__badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 7px;
+  border-radius: 3px;
+  pointer-events: none;
+}
+.card__badge--streaming {
+  background: rgba(74,158,255,0.85);
+  color: white;
+  backdrop-filter: blur(4px);
+}
+.card__badge--funding {
+  background: rgba(201,168,76,0.9);
+  color: #1a1000;
+  backdrop-filter: blur(4px);
+}
+.card__badge--urgent {
+  background: rgba(232,55,46,0.88);
+  color: white;
+  backdrop-filter: blur(4px);
+  font-size: 8.5px;
+}
+
+/* Info */
+.card__info {
+  padding: 10px 4px 0;
+}
+
+.card__title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card__sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+.card__year { color: var(--text-3); }
+.card__dot-sep { opacity: 0.4; }
+.card__genre { color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Funding mini bar */
+.card__funding {
+  margin-top: 6px;
+}
+.card__funding-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.card__funding-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.card__funding-days {
+  font-size: 10px;
+  color: var(--text-3);
+}
+.card__funding-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.card__funding-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--gold), var(--gold-light));
+  border-radius: 2px;
+}
