@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { allContent } from '../data/content';
 import { useWatchlist } from '../context/WatchlistContext';
+import { useLibrary } from '../context/LibraryContext';
 import './DetailPage.css';
 
 /* ─── SVG icon helpers ─────────────────────────────────────────────────────── */
@@ -138,6 +139,7 @@ const EP_GRADIENTS = [
 ];
 /* ─── Play Modal ──────────────────────────────────────────────────────────── */
 function PlayModal({ item, onClose }) {
+  const { addRental, addToHistory } = useLibrary();
   const price    = item.rentalPrice ?? 3.99;
   const isFree   = price === 0;
   const steps    = isFree ? ['Login', 'Watch'] : ['Login', 'Rent', 'Watch'];
@@ -153,7 +155,10 @@ function PlayModal({ item, onClose }) {
   const canLogin   = email.includes('@');
   const canRent    = !showNewCard || (form.card.length >= 19 && form.expiry.length >= 5 && form.cvv.length >= 3);
 
-  const handleLoginContinue = () => isFree ? setStep(3) : setStep(2);
+  const handleLoginContinue = () => {
+    if (isFree) { addToHistory(item); setStep(3); }
+    else setStep(2);
+  };
 
   return (
     <div className="rm__overlay" onClick={onClose}>
@@ -269,7 +274,7 @@ function PlayModal({ item, onClose }) {
             <div className="rm__secure-note"><IconLock /><span>Payments are encrypted and secure</span></div>
             <div className="rm__footer">
               <button className="btn btn--secondary rm__btn-back" onClick={() => setStep(1)}>← Back</button>
-              <button className="btn btn--gold" disabled={!canRent} onClick={() => setStep(3)}>Pay ${price.toFixed(2)}</button>
+              <button className="btn btn--gold" disabled={!canRent} onClick={() => { addRental(item); addToHistory(item); setStep(3); }}>Pay ${price.toFixed(2)}</button>
             </div>
           </div>
         )}

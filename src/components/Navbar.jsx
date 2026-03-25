@@ -16,7 +16,7 @@ function timeAgo(ts) {
   return `${Math.floor(d / 86400000)}d ago`;
 }
 
-const NAV_ITEMS = ['Home', 'Movies', 'Series', 'Fund a Film', 'My Watchlist'];
+const NAV_ITEMS = ['Home', 'Movies', 'Series', 'Fund a Film', 'My Library'];
 
 const FILTER_MAP = { Home: 'all', Movies: 'movies', Series: 'series', 'Fund a Film': 'funding' };
 
@@ -40,8 +40,8 @@ export default function Navbar({ onFilterChange, activeFilter }) {
   }, []);
 
   const handleNavClick = (item) => {
-    if (item === 'My Watchlist') {
-      navigate('/watchlist');
+    if (item === 'My Library') {
+      navigate('/library');
       setMenuOpen(false);
       return;
     }
@@ -54,7 +54,7 @@ export default function Navbar({ onFilterChange, activeFilter }) {
   };
 
   const isActive = (item) => {
-    if (item === 'My Watchlist') return location.pathname === '/watchlist';
+    if (item === 'My Library') return location.pathname === '/library';
     if (location.pathname !== '/') return false;
     return (
       (item === 'Home' && activeFilter === 'all') ||
@@ -167,7 +167,7 @@ export default function Navbar({ onFilterChange, activeFilter }) {
                     <p className="navbar__profile-email">{user.email}</p>
                   </div>
                   <div className="navbar__profile-divider" />
-                  <button className="navbar__profile-item" onClick={() => { navigate('/watchlist'); setProfileMenuOpen(false); }}>My Watchlist</button>
+                  <button className="navbar__profile-item" onClick={() => { navigate('/library'); setProfileMenuOpen(false); }}>My Library</button>
                   <button className="navbar__profile-item navbar__profile-item--danger" onClick={() => { logout(); setProfileMenuOpen(false); }}>Sign Out</button>
                 </div>
               )}

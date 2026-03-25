@@ -1,15 +1,13 @@
 .wl__page {
   min-height: 100vh;
-  padding: 100px 24px 60px;
-  max-width: 900px;
+  padding: 100px 24px 80px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
+/* ── Header ── */
 .wl__header {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin-bottom: 40px;
+  margin-bottom: 8px;
 }
 
 .wl__title {
@@ -20,10 +18,57 @@
   margin: 0;
 }
 
-.wl__count {
+/* ── Tabs ── */
+.wl__tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 0;
+}
+
+.wl__tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  padding: 14px 6px;
   font-size: 14px;
-  color: rgba(255,255,255,0.35);
-  margin: 0;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  position: relative;
+  margin-right: 20px;
+  transition: color 0.15s;
+}
+.wl__tab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--gold, #c9a84c);
+  border-radius: 2px 2px 0 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.wl__tab:hover { color: rgba(255,255,255,0.7); }
+.wl__tab--active { color: white; font-weight: 600; }
+.wl__tab--active::after { opacity: 1; }
+
+.wl__tab-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  line-height: 1.4;
+}
+.wl__tab--active .wl__tab-count {
+  background: rgba(201,168,76,0.15);
+  color: var(--gold, #c9a84c);
 }
 
 /* ── Empty state ── */
@@ -107,7 +152,47 @@
   background: linear-gradient(135deg, #1a1a2e, #16213e);
 }
 
-/* Update badge — bottom of poster, gold pill */
+/* ── Badges (top-left) ── */
+.wl__card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.wl__card-badge--streaming {
+  background: rgba(0,0,0,0.65);
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.wl__card-badge--funding {
+  background: rgba(201,168,76,0.18);
+  color: var(--gold, #c9a84c);
+  border: 1px solid rgba(201,168,76,0.35);
+}
+
+/* Rental expiry — green tint when plenty of time, amber when close */
+.wl__card-badge--rental {
+  background: rgba(16,185,129,0.18);
+  color: #10b981;
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+/* History watched-date — muted */
+.wl__card-badge--history {
+  background: rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── Update badge (bottom of poster, gold) ── */
 .wl__card-update {
   position: absolute;
   bottom: 8px;
@@ -125,32 +210,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  pointer-events: none;
 }
 
-.wl__card-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border-radius: 4px;
-}
-
-.wl__card-badge--streaming {
-  background: rgba(0,0,0,0.65);
-  color: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.15);
-}
-
-.wl__card-badge--funding {
-  background: rgba(201,168,76,0.2);
-  color: var(--gold, #c9a84c);
-  border: 1px solid rgba(201,168,76,0.4);
-}
-
+/* ── Remove button (top-right, shown on hover) ── */
 .wl__card-remove {
   position: absolute;
   top: 8px;
@@ -179,6 +242,29 @@
   color: white;
 }
 
+/* ── Watch/play action button (center of poster, shown on hover) ── */
+.wl__card-action {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  transition: opacity 0.18s;
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 10px;
+}
+
+.wl__card-action svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+
+.wl__card:hover .wl__card-action {
+  opacity: 1;
+}
+
+/* ── Card info ── */
 .wl__card-title {
   font-size: 13px;
   font-weight: 600;
