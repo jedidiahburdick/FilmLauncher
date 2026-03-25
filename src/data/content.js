@@ -950,9 +950,9 @@ export const rows = [
   { id: 'featured',       label: 'Featured Right Now',        filter: (c) => c.rows.includes('featured') },
   { id: 'funding',        label: 'Film Funding',               filter: (c) => c.type === 'funding' },
   { id: 'trending',       label: 'Trending This Week',        filter: (c) => c.rows.includes('trending') },
-  { id: 'award-winners',  label: 'Award-Winning Cinema',      filter: (c) => c.rows.includes('award-winners') },
-  { id: 'series',         label: 'Series Worth Watching',     filter: (c) => c.rows.includes('series') },
   { id: 'new-releases',   label: 'New Releases',              filter: (c) => c.rows.includes('new-releases') },
+  { id: 'series',         label: 'Series Worth Watching',     filter: (c) => c.rows.includes('series') },
+  { id: 'award-winners',  label: 'Award-Winning Cinema',      filter: (c) => c.rows.includes('award-winners') },
 ];
 
 export const heroContent = allContent.find((c) => c.id === 27); // kept for compat

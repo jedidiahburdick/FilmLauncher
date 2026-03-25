@@ -23,7 +23,7 @@
   top: 36px;
   /* form is max-width 380px centered → left edge at calc(50% - 190px).
      subtract 16px for the PNG's built-in whitespace padding */
-  left: calc(50% - 219px);
+  left: calc(50% - 232px);
   background: none;
   border: none;
   padding: 0;
