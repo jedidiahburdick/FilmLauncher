@@ -718,19 +718,16 @@ function BackerStream({ item, onOpenModal }) {
   const timeStr = b.daysAgo === 0 ? 'just now' : b.daysAgo === 1 ? '1 day ago' : `${b.daysAgo}d ago`;
 
   return (
-    <div className="dp__backer-stream" onClick={onOpenModal} role="button" tabIndex={0}>
+    <button className="dp__backer-stream" onClick={onOpenModal} aria-label="View all backers">
+      <span className="dp__backer-pulse" />
       <div className={`dp__backer-ticker dp__backer-ticker--${phase}`}>
-        <div className="dp__backer-ticker-avatar">{b.anonymous ? '?' : b.name.charAt(0)}</div>
         <span className="dp__backer-ticker-text">
           <strong>{b.anonymous ? 'Anonymous' : b.name}</strong>{' backed '}
           <strong>${b.amount.toLocaleString()}</strong>
           <span className="dp__backer-ticker-time"> · {timeStr}</span>
         </span>
-        <span className="dp__backer-ticker-cta">
-          See all {item.fundingBackers?.toLocaleString() ?? backers.length} →
-        </span>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -899,7 +896,7 @@ export default function DetailPage() {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setActiveSeason(1);
     setSeasonPickerOpen(false);
-    setTab('overview');
+    setTab('team');
     setBackdropLoaded(false);
     setBackdropError(false);
     setPosterError(false);
@@ -1000,6 +997,7 @@ export default function DetailPage() {
                 <span>${item.fundingGoal.toLocaleString()} goal · {item.fundingBackers?.toLocaleString()} backers</span>
                 <span>{item.fundingDaysLeft} days left</span>
               </div>
+              <BackerStream item={item} onOpenModal={() => setBackersModalOpen(true)} />
             </div>
           )}
 
@@ -1071,6 +1069,31 @@ export default function DetailPage() {
 
           </div>
 
+          {/* ── Funding: overview content in hero ────────────────────── */}
+          {isFunding && (
+            <div className="dp__hero-meta">
+              <div className="dp__stats">
+                <span>{item.year}</span>
+                <span className="dp__stats-sep">·</span>
+                <span className="dp__rating-chip">{item.rating}</span>
+                <span className="dp__stats-sep">·</span>
+                <span>{item.duration}</span>
+                {item.director && (<><span className="dp__stats-sep">·</span><span>Dir. <strong>{item.director}</strong></span></>)}
+              </div>
+              <div className="dp__genres">
+                {item.genre.map((g) => <span key={g} className="dp__genre-pill">{g}</span>)}
+              </div>
+              <p className="dp__hero-desc">{item.description}</p>
+              {item.cast && item.cast[0] !== 'Documentary' && item.cast[0] !== 'Casting in progress' && (
+                <div className="dp__cast dp__cast--hero">
+                  <div className="dp__cast-list">
+                    {item.cast.map((c) => <span key={c} className="dp__cast-chip">{c}</span>)}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ── Series: meta + description OR season picker ──────────── */}
           {isSeries && !seasonPickerOpen && (
             <div className="dp__hero-meta" key="meta">
@@ -1134,57 +1157,17 @@ export default function DetailPage() {
         <div className="dp__body">
           <div className="dp__funding-body">
 
-            {/* Backer stream */}
-            <BackerStream item={item} onOpenModal={() => setBackersModalOpen(true)} />
-
             {/* Tabs */}
             <div className="dp__tabs">
-              {['overview', 'team', 'updates', 'faq', 'community'].map((t) => (
+              {['team', 'updates', 'faq', 'community'].map((t) => (
                 <button key={t} className={`dp__tab ${tab === t ? 'dp__tab--active' : ''}`} onClick={() => setTab(t)}>
-                  {{ overview: 'Overview', team: 'Team', updates: 'Updates', faq: 'FAQ', community: 'Community' }[t]}
+                  {{ team: 'Team', updates: 'Updates', faq: 'FAQ', community: 'Community' }[t]}
                   {t === 'updates' && item.updates?.length > 0 && (
                     <span className="dp__tab-badge">{item.updates.length}</span>
                   )}
                 </button>
               ))}
             </div>
-
-            {tab === 'overview' && (
-              <div className="dp__section">
-                <div className="dp__stats dp__stats--body">
-                  <span>{item.year}</span>
-                  <span className="dp__stats-sep">·</span>
-                  <span className="dp__rating-chip">{item.rating}</span>
-                  <span className="dp__stats-sep">·</span>
-                  <span>{item.duration}</span>
-                  {item.director && (<><span className="dp__stats-sep">·</span><span>Dir. <strong>{item.director}</strong></span></>)}
-                </div>
-                <div className="dp__genres dp__genres--body">
-                  {item.genre.map((g) => <span key={g} className="dp__genre-pill dp__genre-pill--body">{g}</span>)}
-                </div>
-                <p className="dp__description">{item.description}</p>
-                {item.cast && item.cast[0] !== 'Documentary' && item.cast[0] !== 'Casting in progress' && (
-                  <div className="dp__cast">
-                    <h4 className="dp__section-label">Cast</h4>
-                    <div className="dp__cast-list">
-                      {item.cast.map((c) => <span key={c} className="dp__cast-chip">{c}</span>)}
-                    </div>
-                  </div>
-                )}
-                {item.awards?.length > 0 && (
-                  <div className="dp__awards">
-                    <h4 className="dp__section-label">Recognition</h4>
-                    <div className="dp__awards-list">
-                      {item.awards.map((a) => (
-                        <span key={a} className="dp__award-chip">
-                          <IconStar size={10} />{a}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* ── Updates tab ──────────────────────────────────────────── */}
             {tab === 'updates' && (
