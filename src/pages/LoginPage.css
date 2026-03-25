@@ -1,0 +1,232 @@
+.lp {
+  display: flex;
+  min-height: 100vh;
+  background: #080808;
+}
+
+/* ── Form panel (left 50%) ─────────────────────────── */
+.lp__form-panel {
+  position: relative;
+  width: 50%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 64px;
+  background: #080808;
+}
+
+/* Logo — absolute at top, left edge matches the centered form's left edge */
+.lp__logo-btn {
+  position: absolute;
+  top: 36px;
+  /* form is max-width 380px centered → left edge at calc(50% - 190px).
+     subtract 16px for the PNG's built-in whitespace padding */
+  left: calc(50% - 219px);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.lp__logo-btn:hover { opacity: 0.75; }
+.lp__logo-img {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Content wrapper — constrains form width, centered */
+.lp__content {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* Form content */
+.lp__form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp__form--success {
+  align-items: center;
+  text-align: center;
+}
+
+.lp__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.lp__subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  margin: 0 0 32px;
+  line-height: 1.6;
+}
+
+/* Field */
+.lp__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.lp__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.01em;
+}
+
+.lp__input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: white;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lp__input:focus {
+  border-color: var(--gold, #c9a84c);
+  background: rgba(255,255,255,0.08);
+}
+.lp__input::placeholder { color: rgba(255,255,255,0.2); }
+
+/* CTA */
+.lp__cta {
+  width: 100%;
+  padding: 15px;
+  font-size: 15px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+/* Divider */
+.lp__divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0;
+  color: rgba(255,255,255,0.25);
+  font-size: 12px;
+}
+.lp__divider::before,
+.lp__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.09);
+}
+
+/* Social icon buttons */
+.lp__socials {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.lp__social {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.lp__social:hover {
+  border-color: rgba(255,255,255,0.32);
+  background: rgba(255,255,255,0.1);
+}
+
+/* Terms */
+.lp__terms {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}
+.lp__terms span {
+  color: rgba(255,255,255,0.45);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Back link */
+.lp__back {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  padding: 8px 0 0;
+  text-align: left;
+  transition: color 0.15s;
+  margin-top: 4px;
+}
+.lp__back:hover { color: rgba(255,255,255,0.65); }
+
+/* Success avatar */
+.lp__success-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.15);
+  border: 2px solid var(--gold, #c9a84c);
+  color: var(--gold, #c9a84c);
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Playfair Display', Georgia, serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* ── Visual panel (right 50%) — hard edge, no blending */
+.lp__visual-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.lp__hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── Mobile ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .lp {
+    flex-direction: column;
+  }
+
+  .lp__form-panel {
+    width: 100%;
+    min-height: 100vh;
+    padding: 80px 28px 48px;
+  }
+
+  .lp__visual-panel {
+    display: none;
+  }
+}

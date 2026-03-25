@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ContentRow from './components/ContentRow';
 import DetailPage from './pages/DetailPage';
 import WatchlistPage from './pages/WatchlistPage';
+import LoginPage from './pages/LoginPage';
 import { WatchlistProvider } from './context/WatchlistContext';
+import { AuthProvider } from './context/AuthContext';
 import { allContent, rows, heroItems } from './data/content';
 import './App.css';
 
@@ -77,18 +79,23 @@ function BrowsePage({ activeFilter }) {
 
 export default function App() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const location = useLocation();
+  const hideNav = location.pathname === '/login';
 
   return (
+    <AuthProvider>
     <WatchlistProvider>
       <div className="app">
-        <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />
+        {!hideNav && <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />}
 
         <Routes>
           <Route path="/" element={<BrowsePage activeFilter={activeFilter} />} />
           <Route path="/film/:id" element={<DetailPage />} />
           <Route path="/watchlist" element={<WatchlistPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </div>
     </WatchlistProvider>
+    </AuthProvider>
   );
 }
