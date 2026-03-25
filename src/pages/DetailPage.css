@@ -184,6 +184,17 @@
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   transition: all var(--transition); flex-shrink: 0;
 }
+.dp__icon-btn--active {
+  background: rgba(201,168,76,0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.dp__icon-btn--active:hover {
+  background: rgba(201,168,76,0.25);
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
 .dp__icon-btn:hover {
   background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4);
   transform: translateY(-1px);
@@ -422,7 +433,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   flex-shrink: 0;
 }
-.rm__steps { display: flex; align-items: center; }
+.rm__steps { display: flex; align-items: center; justify-content: center; flex: 1; }
 .rm__step { display: flex; align-items: center; gap: 8px; }
 .rm__step-line { width: 32px; height: 1px; background: rgba(255,255,255,0.1); margin: 0 4px; transition: background 0.3s; }
 .rm__step-line--done { background: var(--gold); }
@@ -518,6 +529,61 @@
 .rm__recap-body {}
 .rm__recap-name { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
 .rm__recap-amt { font-size: 13px; font-weight: 700; color: var(--gold); }
+
+/* ── Play modal saved card ── */
+.pm__saved-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+}
+.pm__saved-card-left { display: flex; align-items: center; gap: 14px; }
+.pm__card-icon { flex-shrink: 0; }
+.pm__card-label { font-size: 14px; font-weight: 600; color: white; margin-bottom: 2px; }
+.pm__card-exp { font-size: 12px; color: rgba(255,255,255,0.4); }
+.pm__card-check {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(201,168,76,0.15); border: 1px solid var(--gold);
+  display: flex; align-items: center; justify-content: center; color: var(--gold);
+  flex-shrink: 0;
+}
+.pm__change-card-btn {
+  background: none; border: none; padding: 0; margin-bottom: 4px;
+  font-size: 13px; color: var(--gold); cursor: pointer; text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pm__change-card-btn:hover { color: #e0c060; }
+
+/* ── Play modal player placeholder ── */
+.pm__player {
+  width: 100%; aspect-ratio: 16/9; background: #000;
+  border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+  position: relative;
+}
+.pm__player-inner {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: rgba(255,255,255,0.4); font-size: 13px;
+  background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+}
+.pm__player-inner svg { opacity: 0.3; }
+
+/* ── Auth / Login step ── */
+.rm__login-continue { width: 100%; padding: 14px; font-size: 15px; margin-top: 4px; border-radius: 12px; }
+.rm__auth-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 24px 0; color: rgba(255,255,255,0.3); font-size: 13px;
+}
+.rm__auth-divider::before, .rm__auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
+}
+.rm__auth-socials { display: flex; gap: 12px; margin-bottom: 8px; }
+.rm__auth-social {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 13px; border-radius: 12px; font-size: 14px; font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.04);
+  color: white; cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.rm__auth-social:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
 
 /* ── Form fields ── */
 .rm__form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px; }

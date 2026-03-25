@@ -22,16 +22,22 @@ export default function Navbar({ onFilterChange, activeFilter }) {
   }, []);
 
   const handleNavClick = (item) => {
+    if (item === 'My Watchlist') {
+      navigate('/watchlist');
+      setMenuOpen(false);
+      return;
+    }
     const filter = FILTER_MAP[item];
     if (filter) {
       onFilterChange(filter);
-      if (onDetailPage) navigate('/');
+      navigate('/');
     }
     setMenuOpen(false);
   };
 
   const isActive = (item) => {
-    if (onDetailPage) return false;
+    if (item === 'My Watchlist') return location.pathname === '/watchlist';
+    if (location.pathname !== '/') return false;
     return (
       (item === 'Home' && activeFilter === 'all') ||
       (item === 'Movies' && activeFilter === 'movies') ||

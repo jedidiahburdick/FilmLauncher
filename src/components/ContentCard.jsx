@@ -48,7 +48,15 @@ export default function ContentCard({ item }) {
         {/* Overlay on hover */}
         <div className="card__overlay">
           <div className="card__overlay-inner">
-            <button className="card__play">
+            <button
+              className="card__play"
+              aria-label={item.type === 'funding' ? 'Back this film' : 'Play now'}
+              onClick={(e) => {
+                e.stopPropagation();
+                const param = item.type === 'funding' ? 'back=1' : 'play=1';
+                navigate(`/film/${item.id}?${param}`);
+              }}
+            >
               {item.type === 'streaming' ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               ) : (

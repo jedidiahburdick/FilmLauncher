@@ -49,6 +49,7 @@ export const allContent = [
     matchScore: 97,
     awards: ['19 Festival Award Wins', 'Zion International Film Festival'],
     trailerUrl: 'https://vimeo.com/369370923',
+    rentalPrice: 3.99,
     rows: ['featured', 'trending', 'new-releases'],
   },
   {
@@ -216,6 +217,7 @@ export const allContent = [
     poster: silkTreesPoster,
     backdrop: silkTreesHero,
     trailerUrl: 'https://vimeo.com/162870042',
+    rentalPrice: 0,
     matchScore: 94,
     rows: ['streaming', 'new-releases'],
   },

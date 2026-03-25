@@ -4,6 +4,8 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ContentRow from './components/ContentRow';
 import DetailPage from './pages/DetailPage';
+import WatchlistPage from './pages/WatchlistPage';
+import { WatchlistProvider } from './context/WatchlistContext';
 import { allContent, rows, heroItems } from './data/content';
 import './App.css';
 
@@ -77,13 +79,16 @@ export default function App() {
   const [activeFilter, setActiveFilter] = useState('all');
 
   return (
-    <div className="app">
-      <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />
+    <WatchlistProvider>
+      <div className="app">
+        <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />
 
-      <Routes>
-        <Route path="/" element={<BrowsePage activeFilter={activeFilter} />} />
-        <Route path="/film/:id" element={<DetailPage />} />
-      </Routes>
-    </div>
+        <Routes>
+          <Route path="/" element={<BrowsePage activeFilter={activeFilter} />} />
+          <Route path="/film/:id" element={<DetailPage />} />
+          <Route path="/watchlist" element={<WatchlistPage />} />
+        </Routes>
+      </div>
+    </WatchlistProvider>
   );
 }
