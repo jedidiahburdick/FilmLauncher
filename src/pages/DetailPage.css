@@ -70,7 +70,8 @@
 .dp__hero-tab-bar {
   position: absolute;
   bottom: 0; left: 64px;
-  width: fit-content;
+  width: calc(100% - 128px);
+  max-width: 632px; /* matches dp__funding-body: 760px max - 64px padding each side */
   z-index: 3;
   display: flex;
   gap: 4px;
