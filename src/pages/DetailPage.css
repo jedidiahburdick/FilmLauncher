@@ -69,12 +69,14 @@
 /* ── Funding tab bar — full-width strip anchored to hero bottom ── */
 .dp__hero-tab-bar {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0; left: 0;
+  width: 100%;
+  max-width: 760px;
   z-index: 3;
   display: flex;
   gap: 4px;
   padding: 0 64px;
-  background: linear-gradient(to bottom, transparent 0%, rgba(8,8,8,0.55) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 /* Back arrow */
