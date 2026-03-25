@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWatchlist } from '../context/WatchlistContext';
+import { useNotifications } from '../context/NotificationContext';
 import './WatchlistPage.css';
 
 export default function WatchlistPage() {
   const { watchlist, toggleWatchlist } = useWatchlist();
+  const { getItemNotification } = useNotifications();
   const navigate = useNavigate();
 
   return (
@@ -36,6 +38,11 @@ export default function WatchlistPage() {
                 <span className={`wl__card-badge wl__card-badge--${item.type}`}>
                   {item.type === 'funding' ? 'Funding' : 'Streaming'}
                 </span>
+                {getItemNotification(item.id) && (
+                  <span className="wl__card-update">
+                    {getItemNotification(item.id).label}
+                  </span>
+                )}
                 <button
                   className="wl__card-remove"
                   aria-label="Remove from watchlist"

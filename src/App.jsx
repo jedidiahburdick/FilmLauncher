@@ -8,6 +8,7 @@ import WatchlistPage from './pages/WatchlistPage';
 import LoginPage from './pages/LoginPage';
 import { WatchlistProvider } from './context/WatchlistContext';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { allContent, rows, heroItems } from './data/content';
 import './App.css';
 
@@ -85,6 +86,7 @@ export default function App() {
   return (
     <AuthProvider>
     <WatchlistProvider>
+    <NotificationProvider>
       <div className="app">
         {!hideNav && <Navbar onFilterChange={setActiveFilter} activeFilter={activeFilter} />}
 
@@ -95,6 +97,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
         </Routes>
       </div>
+    </NotificationProvider>
     </WatchlistProvider>
     </AuthProvider>
   );

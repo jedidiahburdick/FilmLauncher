@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logoSrc from '../assets/FL-logo.png';
-import heroImg from '../assets/pilgrims-progress.png';
+import heroImg from '../../posters/douglas-poster.png';
 import './LoginPage.css';
 
 export default function LoginPage() {

@@ -2,8 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logoSrc from '../assets/FL-logo.png';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 import SearchOverlay from './SearchOverlay';
 import './Navbar.css';
+
+function timeAgo(ts) {
+  const d = Date.now() - ts;
+  const m = Math.floor(d / 60000);
+  if (m < 1)  return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(d / 3600000);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(d / 86400000)}d ago`;
+}
 
 const NAV_ITEMS = ['Home', 'Movies', 'Series', 'Fund a Film', 'My Watchlist'];
 
@@ -13,9 +24,11 @@ export default function Navbar({ onFilterChange, activeFilter }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { notifications, unreadCount, markAllRead, clearNotification } = useNotifications();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const onDetailPage = location.pathname.startsWith('/film/');
@@ -81,6 +94,58 @@ export default function Navbar({ onFilterChange, activeFilter }) {
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
+
+          {user && (
+            <div className="navbar__bell-wrap">
+              <button
+                className="navbar__bell"
+                aria-label="Notifications"
+                onClick={() => { setBellOpen((o) => !o); setProfileMenuOpen(false); if (!bellOpen) markAllRead(); }}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="navbar__bell-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                )}
+              </button>
+
+              {bellOpen && (
+                <div className="navbar__notif-menu">
+                  <div className="navbar__notif-header">
+                    <p className="navbar__notif-title">Notifications</p>
+                    {notifications.length > 0 && (
+                      <button className="navbar__notif-mark-read" onClick={markAllRead}>Mark all read</button>
+                    )}
+                  </div>
+                  <div className="navbar__notif-list">
+                    {notifications.length === 0 ? (
+                      <p className="navbar__notif-empty">No notifications yet.<br/>Add titles to your watchlist to get updates.</p>
+                    ) : (
+                      notifications.map((n) => (
+                        <button
+                          key={n.id}
+                          className={`navbar__notif-item${!n.read ? ' navbar__notif-item--unread' : ''}`}
+                          onClick={() => { navigate(`/film/${n.itemId}`); setBellOpen(false); }}
+                        >
+                          <div className="navbar__notif-poster">
+                            {n.poster && <img src={n.poster} alt={n.title} />}
+                          </div>
+                          <div className="navbar__notif-body">
+                            <p className="navbar__notif-label">{n.label}</p>
+                            <p className="navbar__notif-msg">{n.message}</p>
+                            <p className="navbar__notif-time">{timeAgo(n.timestamp)}</p>
+                          </div>
+                          {!n.read && <span className="navbar__notif-dot" />}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {user ? (
             <div className="navbar__profile-wrap">
