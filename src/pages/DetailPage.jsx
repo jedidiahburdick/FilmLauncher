@@ -620,6 +620,260 @@ function EpisodeRow({ ep, index }) {
   );
 }
 
+/* ─── Mock data for funding tabs ───────────────────────────────────────────── */
+const AVATAR_COLORS = [
+  { bg: 'rgba(201,168,76,0.18)',  fg: '#c9a84c' },
+  { bg: 'rgba(99,102,241,0.18)',  fg: '#818cf8' },
+  { bg: 'rgba(236,72,153,0.18)',  fg: '#f472b6' },
+  { bg: 'rgba(34,197,94,0.18)',   fg: '#4ade80' },
+  { bg: 'rgba(249,115,22,0.18)',  fg: '#fb923c' },
+];
+
+function getTeam(item) {
+  const dir = item.director || 'Alex Reid';
+  return [
+    { name: dir, role: 'Director',
+      initials: dir.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase(),
+      bio: 'Award-winning filmmaker with a decade of narrative and documentary experience. Work has screened at Sundance, TIFF, and the Berlin International Film Festival.',
+      chips: ['Sundance Alum', 'TIFF Selection', 'Best Director — Nashville FF'] },
+    { name: 'Jordan Ellis', role: 'Producer', initials: 'JE',
+      bio: 'Produced 14 independent features, two of which earned Oscar eligibility. Fifteen-plus years navigating international co-productions and film finance.',
+      chips: ['Oscar Eligible', '14 Features', 'Cannes Selection'] },
+    { name: 'Sam Torres', role: 'Director of Photography', initials: 'ST',
+      bio: 'Known for naturalistic available-light cinematography. Has shot documentaries across 42 countries and lensed three narrative features.',
+      chips: ['42 Countries', 'ASC Member', 'SXSW Cinematography Award'] },
+    { name: 'Maya Chen', role: 'Editor', initials: 'MC',
+      bio: 'ACE Award nominee whose work spans narrative features, episodic television, and documentary. Known for rhythmic, story-first editing that honors performance.',
+      chips: ['ACE Nominee', 'HBO · A24 · Netflix'] },
+    { name: 'Lena Park', role: 'Composer', initials: 'LP',
+      bio: 'Film composer blending orchestral and electronic textures. Recent work includes a Sundance Grand Jury Prize winner and three festival champions.',
+      chips: ['Sundance Grand Jury Score', 'ASCAP Film Award'] },
+  ];
+}
+
+const MOCK_FAQS = [
+  { q: 'When will the film be completed?',
+    a: 'Production begins Q3 2025, with principal photography wrapping by year end. Post-production targets early 2026. Backers receive progress updates throughout.' },
+  { q: 'What do the funds cover?',
+    a: 'Every dollar goes directly to production: camera and equipment rental, crew wages, location permits, catering, travel, and post-production including sound design, color grading, and score recording.' },
+  { q: 'When will I receive my rewards?',
+    a: 'Digital rewards (downloads, early-access screeners) are fulfilled within 60 days of the film\'s final delivery. Physical rewards ship within 90 days. Producer credits appear in the finished film.' },
+  { q: 'What if the campaign doesn\'t reach its goal?',
+    a: 'This is an all-or-nothing campaign. If the goal is not met by the deadline, every backer is fully refunded. No charges are processed unless the goal is reached.' },
+  { q: 'Can I upgrade or change my backing tier?',
+    a: 'Yes — reach out directly via the campaign contact email and the team can adjust your pledge level before the campaign closes.' },
+  { q: 'Will the film be available internationally?',
+    a: 'Absolutely. The team is pursuing worldwide distribution. All backers receive access regardless of territory. A global streaming release is planned to follow the festival premiere window.' },
+];
+
+const MOCK_COMMENTS = [
+  { id: 1, author: 'Marcus Webb', initials: 'MW', timeAgo: '2 days ago',
+    text: 'This project is exactly what independent cinema needs right now. The script excerpt in the last update was extraordinary — backed at the $75 tier and genuinely can\'t wait.',
+    likes: 18,
+    replies: [{ id: 11, author: 'Creative Team', initials: 'CT', isOfficial: true, timeAgo: '1 day ago',
+      text: 'Thank you Marcus — this genuinely means a lot. We can\'t wait to share more of the story with you.', likes: 6 }] },
+  { id: 2, author: 'Priya Nair', initials: 'PN', timeAgo: '4 days ago',
+    text: 'I\'ve followed this director since their short film days. The jump to this scale feels completely earned. Told everyone — three of them have already backed.',
+    likes: 12, replies: [] },
+  { id: 3, author: 'David Fontaine', initials: 'DF', timeAgo: '1 week ago',
+    text: 'A question for the team: will there be a theatrical run before streaming? And any timeline on the behind-the-scenes documentary mentioned in the reward tiers?',
+    likes: 7,
+    replies: [{ id: 31, author: 'Creative Team', initials: 'CT', isOfficial: true, timeAgo: '6 days ago',
+      text: 'Great questions David. We\'re targeting a festival premiere followed by limited theatrical, then streaming roughly six months later. The BTS doc (25–30 min) ships to eligible backers within 3 months of final delivery.', likes: 11 }] },
+  { id: 4, author: 'Sofia Reyes', initials: 'SR', timeAgo: '1 week ago',
+    text: 'The production stills alone sold me. There\'s a visual confidence here that\'s rare at this budget level. Backed.', likes: 22, replies: [] },
+];
+
+const MOCK_BACKERS = [
+  { name: 'Marcus Webb',    amount: 75,  daysAgo: 0, anonymous: false },
+  { name: 'Priya Nair',     amount: 150, daysAgo: 1, anonymous: false },
+  { name: 'Anonymous',      amount: 25,  daysAgo: 1, anonymous: true  },
+  { name: 'David Fontaine', amount: 500, daysAgo: 2, anonymous: false },
+  { name: 'Sofia Reyes',    amount: 75,  daysAgo: 2, anonymous: false },
+  { name: 'James Wu',       amount: 250, daysAgo: 3, anonymous: false },
+  { name: 'Anonymous',      amount: 50,  daysAgo: 3, anonymous: true  },
+  { name: 'Elena Moss',     amount: 100, daysAgo: 4, anonymous: false },
+  { name: 'Tyler Grant',    amount: 150, daysAgo: 5, anonymous: false },
+  { name: 'Rosa Kim',       amount: 75,  daysAgo: 6, anonymous: false },
+];
+
+/* ─── Backer stream ticker ──────────────────────────────────────────────────── */
+function BackerStream({ item, onOpenModal }) {
+  const backers = item.backers?.length > 0 ? item.backers : MOCK_BACKERS;
+  const [idx, setIdx]     = useState(0);
+  const [phase, setPhase] = useState('in');
+
+  useEffect(() => {
+    const hold = setTimeout(() => setPhase('out'), 2800);
+    return () => clearTimeout(hold);
+  }, [idx]);
+
+  useEffect(() => {
+    if (phase !== 'out') return;
+    const t = setTimeout(() => { setIdx((i) => (i + 1) % backers.length); setPhase('in'); }, 420);
+    return () => clearTimeout(t);
+  }, [phase, backers.length]);
+
+  const b = backers[idx];
+  const timeStr = b.daysAgo === 0 ? 'just now' : b.daysAgo === 1 ? '1 day ago' : `${b.daysAgo}d ago`;
+
+  return (
+    <div className="dp__backer-stream" onClick={onOpenModal} role="button" tabIndex={0}>
+      <div className={`dp__backer-ticker dp__backer-ticker--${phase}`}>
+        <div className="dp__backer-ticker-avatar">{b.anonymous ? '?' : b.name.charAt(0)}</div>
+        <span className="dp__backer-ticker-text">
+          <strong>{b.anonymous ? 'Anonymous' : b.name}</strong>{' backed '}
+          <strong>${b.amount.toLocaleString()}</strong>
+          <span className="dp__backer-ticker-time"> · {timeStr}</span>
+        </span>
+        <span className="dp__backer-ticker-cta">
+          See all {item.fundingBackers?.toLocaleString() ?? backers.length} →
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Backers modal ─────────────────────────────────────────────────────────── */
+function BackersModal({ item, onClose }) {
+  const backers = item.backers?.length > 0 ? item.backers : MOCK_BACKERS;
+  return (
+    <div className="rm__overlay" onClick={onClose}>
+      <div className="rm rm--wide" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className="rm__header">
+          <div className="dp__bm-header-inner">
+            <h2 className="rm__title" style={{ margin: 0 }}>Backers</h2>
+            <span className="dp__bm-count">{item.fundingBackers?.toLocaleString() ?? backers.length} total</span>
+          </div>
+          <button className="rm__close" onClick={onClose} aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div className="rm__body rm__body--scroll">
+          {backers.map((b, i) => {
+            const ts = b.daysAgo === 0 ? 'today' : b.daysAgo === 1 ? '1 day ago' : `${b.daysAgo}d ago`;
+            return (
+              <div key={i} className="dp__backer">
+                <div className="dp__backer-avatar">{b.anonymous ? '?' : b.name.charAt(0)}</div>
+                <div className="dp__backer-info">
+                  <span className="dp__backer-name">{b.anonymous ? 'Anonymous Backer' : b.name}</span>
+                  <span className="dp__backer-tier">{b.tier || 'Backer'}</span>
+                </div>
+                <div className="dp__backer-right">
+                  <span className="dp__backer-amount">${b.amount.toLocaleString()}</span>
+                  <span className="dp__backer-time">{ts}</span>
+                </div>
+              </div>
+            );
+          })}
+          {item.fundingBackers > backers.length && (
+            <p className="dp__backers-more">+ {(item.fundingBackers - backers.length).toLocaleString()} more backers</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Team tab ──────────────────────────────────────────────────────────────── */
+function TeamTab({ item }) {
+  const team = getTeam(item);
+  return (
+    <div className="dp__section dp__team">
+      {team.map((m, i) => {
+        const col = AVATAR_COLORS[i % AVATAR_COLORS.length];
+        return (
+          <div key={i} className="dp__team-card">
+            <div className="dp__team-avatar" style={{ background: col.bg, color: col.fg }}>{m.initials}</div>
+            <div className="dp__team-body">
+              <p className="dp__team-name">{m.name}</p>
+              <p className="dp__team-role">{m.role}</p>
+              <p className="dp__team-bio">{m.bio}</p>
+              <div className="dp__team-chips">
+                {m.chips.map((c) => <span key={c} className="dp__team-chip">{c}</span>)}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── FAQ tab ───────────────────────────────────────────────────────────────── */
+function FAQTab() {
+  const [openIdx, setOpenIdx] = useState(null);
+  return (
+    <div className="dp__section dp__faq">
+      {MOCK_FAQS.map((faq, i) => (
+        <div key={i} className={`dp__faq-item${openIdx === i ? ' dp__faq-item--open' : ''}`}>
+          <button className="dp__faq-q" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+            <span>{faq.q}</span>
+            <svg className="dp__faq-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          {openIdx === i && <div className="dp__faq-a"><p>{faq.a}</p></div>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Community tab ─────────────────────────────────────────────────────────── */
+function CommentBlock({ c, liked, onLike }) {
+  return (
+    <div className={`dp__comment${c.isReply ? ' dp__comment--reply' : ''}`}>
+      <div className={`dp__comment-avatar${c.isOfficial ? ' dp__comment-avatar--official' : ''}${c.isReply ? ' dp__comment-avatar--sm' : ''}`}>
+        {c.initials}
+      </div>
+      <div className="dp__comment-body">
+        <div className="dp__comment-meta">
+          <span className="dp__comment-author">{c.author}</span>
+          {c.isOfficial && <span className="dp__comment-official-badge">Official</span>}
+          <span className="dp__comment-time">{c.timeAgo}</span>
+        </div>
+        <p className="dp__comment-text">{c.text}</p>
+        <div className="dp__comment-actions">
+          <button className={`dp__comment-like${liked ? ' dp__comment-like--active' : ''}`} onClick={() => onLike(c.id)}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            {c.likes + (liked ? 1 : 0)}
+          </button>
+          {!c.isReply && <button className="dp__comment-reply-btn">Reply</button>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CommunityTab({ item }) {
+  const comments = item.comments?.length > 0 ? item.comments : MOCK_COMMENTS;
+  const [liked, setLiked] = useState({});
+  const toggle = (id) => setLiked((l) => ({ ...l, [id]: !l[id] }));
+  return (
+    <div className="dp__section dp__community">
+      <div className="dp__community-compose">
+        <div className="dp__community-compose-avatar">U</div>
+        <input className="dp__community-input" placeholder="Share a thought or ask a question…" />
+      </div>
+      <div className="dp__community-list">
+        {comments.map((c) => (
+          <div key={c.id} className="dp__comment-thread">
+            <CommentBlock c={c} liked={!!liked[c.id]} onLike={toggle} />
+            {c.replies?.map((r) => (
+              <CommentBlock key={r.id} c={{ ...r, isReply: true }} liked={!!liked[r.id]} onLike={toggle} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main page ────────────────────────────────────────────────────────────── */
 export default function DetailPage() {
   const { id }      = useParams();
@@ -632,10 +886,11 @@ export default function DetailPage() {
   const [posterError, setPosterError]         = useState(false);
   const [activeSeason, setActiveSeason]       = useState(1);
   const [seasonPickerOpen, setSeasonPickerOpen] = useState(false);
-  const [tab, setTab]                         = useState('overview');
+  const [tab, setTab]                           = useState('overview');
   const [rewardModalOpen, setRewardModalOpen]   = useState(false);
   const [trailerModalOpen, setTrailerModalOpen] = useState(false);
   const [playModalOpen, setPlayModalOpen]       = useState(false);
+  const [backersModalOpen, setBackersModalOpen] = useState(false);
 
   const item = allContent.find((c) => c.id === Number(id));
 
@@ -879,11 +1134,14 @@ export default function DetailPage() {
         <div className="dp__body">
           <div className="dp__funding-body">
 
+            {/* Backer stream */}
+            <BackerStream item={item} onOpenModal={() => setBackersModalOpen(true)} />
+
             {/* Tabs */}
             <div className="dp__tabs">
-              {['overview', 'updates', 'backers'].map((t) => (
+              {['overview', 'team', 'updates', 'faq', 'community'].map((t) => (
                 <button key={t} className={`dp__tab ${tab === t ? 'dp__tab--active' : ''}`} onClick={() => setTab(t)}>
-                  {{ overview: 'Overview', updates: 'Updates', backers: 'Backers' }[t]}
+                  {{ overview: 'Overview', team: 'Team', updates: 'Updates', faq: 'FAQ', community: 'Community' }[t]}
                   {t === 'updates' && item.updates?.length > 0 && (
                     <span className="dp__tab-badge">{item.updates.length}</span>
                   )}
@@ -970,49 +1228,14 @@ export default function DetailPage() {
               </div>
             )}
 
-            {/* ── Backers tab ───────────────────────────────────────────── */}
-            {tab === 'backers' && (
-              <div className="dp__section">
-                <div className="dp__backers-summary">
-                  <span className="dp__backers-count">{item.fundingBackers?.toLocaleString()} <em>backers</em></span>
-                  <span className="dp__backers-sep">·</span>
-                  <span className="dp__backers-raised">${item.fundingRaised?.toLocaleString()} <em>raised</em></span>
-                </div>
-                {item.backers?.length > 0 ? (
-                  <>
-                    <div className="dp__backers-list">
-                      {item.backers.map((b, i) => (
-                        <div key={i} className="dp__backer">
-                          <div className="dp__backer-avatar">
-                            {b.anonymous ? '?' : b.name.charAt(0)}
-                          </div>
-                          <div className="dp__backer-info">
-                            <span className="dp__backer-name">{b.anonymous ? 'Anonymous Backer' : b.name}</span>
-                            <span className="dp__backer-tier">{b.tier}</span>
-                          </div>
-                          <div className="dp__backer-right">
-                            <span className="dp__backer-amount">${b.amount.toLocaleString()}</span>
-                            <span className="dp__backer-time">
-                              {b.daysAgo === 0 ? 'today' : b.daysAgo === 1 ? '1 day ago' : `${b.daysAgo}d ago`}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    {item.fundingBackers > item.backers.length && (
-                      <p className="dp__backers-more">
-                        + {(item.fundingBackers - item.backers.length).toLocaleString()} more backers
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <div className="dp__empty-state">
-                    <span className="dp__empty-icon">🎬</span>
-                    <p>Be the first to back this project.</p>
-                  </div>
-                )}
-              </div>
-            )}
+            {/* ── Team tab ──────────────────────────────────────────────── */}
+            {tab === 'team'      && <TeamTab item={item} />}
+
+            {/* ── FAQ tab ───────────────────────────────────────────────── */}
+            {tab === 'faq'       && <FAQTab />}
+
+            {/* ── Community tab ─────────────────────────────────────────── */}
+            {tab === 'community' && <CommunityTab item={item} />}
 
           </div>
         </div>
@@ -1076,6 +1299,9 @@ export default function DetailPage() {
 
       {/* ── Play modal ───────────────────────────────────────────────────── */}
       {playModalOpen && <PlayModal item={item} onClose={() => setPlayModalOpen(false)} />}
+
+      {/* ── Backers modal ────────────────────────────────────────────────── */}
+      {backersModalOpen && <BackersModal item={item} onClose={() => setBackersModalOpen(false)} />}
 
     </div>
   );
