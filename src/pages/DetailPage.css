@@ -60,10 +60,22 @@
 /* ── Hero content block ──────────────────────────────────────────────────── */
 .dp__hero-bottom {
   position: absolute;
-  bottom: 0; left: 0;
-  padding: 0 64px 52px;
+  bottom: 48px; left: 0;
+  padding: 0 64px 24px;
   z-index: 2;
   max-width: 700px;
+}
+
+/* ── Funding tab bar — full-width strip anchored to hero bottom ── */
+.dp__hero-tab-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 3;
+  display: flex;
+  gap: 4px;
+  padding: 0 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: linear-gradient(to bottom, transparent 0%, rgba(8,8,8,0.55) 100%);
 }
 
 /* Back arrow */
@@ -304,7 +316,7 @@
 
 /* ── Funding body (single column, no sidebar) ───────────────────────────── */
 .dp__funding-body {
-  padding: 32px 64px 0;
+  padding: 20px 64px 0;
   max-width: 760px;
 }
 
@@ -749,10 +761,11 @@
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 1000px) {
   .dp__body-inner { grid-template-columns: 1fr; padding: 28px 28px 0; gap: 32px; }
-  .dp__hero-bottom { padding: 0 28px 44px; max-width: 100%; }
+  .dp__hero-bottom { padding: 0 28px 24px; max-width: 100%; }
+  .dp__hero-tab-bar { padding: 0 28px; }
   .dp__hero-poster { right: 28px; bottom: 44px; width: 100px; }
   .dp__series-body { padding: 24px 28px 60px; }
-  .dp__funding-body { padding: 28px 28px 0; }
+  .dp__funding-body { padding: 20px 28px 0; }
   .dp__sidebar { position: static; flex-direction: row; align-items: flex-start; }
   .dp__sidebar-poster { max-width: 180px; }
 }
