@@ -1045,7 +1045,7 @@
 .rm--wide { max-width: 480px; }
 .dp__bm-header-inner { display: flex; align-items: baseline; gap: 10px; flex: 1; }
 .dp__bm-count { font-size: 13px; color: rgba(255,255,255,0.35); }
-.rm__body--scroll { max-height: 60vh; overflow-y: auto; padding: 4px 0 12px; }
+.rm__body--scroll { max-height: 60vh; overflow-y: auto; padding: 8px 28px 20px; }
 
 /* ── Team tab ────────────────────────────────────────────────────────────────── */
 .dp__team { display: flex; flex-direction: column; gap: 0; }
