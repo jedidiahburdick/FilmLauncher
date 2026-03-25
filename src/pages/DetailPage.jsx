@@ -3,6 +3,129 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { allContent } from '../data/content';
 import './DetailPage.css';
 
+/* ─── SVG icon helpers ─────────────────────────────────────────────────────── */
+const IconPlay = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="5 3 19 12 5 21 5 3"/>
+  </svg>
+);
+const IconTrailer = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="5 3 19 12 5 21 5 3"/>
+    <line x1="22" y1="4" x2="22" y2="20"/>
+  </svg>
+);
+const IconPlus = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+const IconShare = ({ size = 17 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+  </svg>
+);
+const IconStar = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+  </svg>
+);
+/* ─── Video embed URL helper (YouTube + Vimeo) ─────────────────────────────── */
+function getEmbedUrl(url) {
+  if (!url) return null;
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}?rel=0&modestbranding=1`;
+  const vi = url.match(/vimeo\.com\/(\d+)/);
+  if (vi) return `https://player.vimeo.com/video/${vi[1]}?title=0&byline=0&portrait=0&color=c9a84c`;
+  return null;
+}
+
+/* ─── Photo gallery carousel ───────────────────────────────────────────────── */
+function UpdateGallery({ images }) {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx((i) => (i - 1 + images.length) % images.length);
+  const next = () => setIdx((i) => (i + 1) % images.length);
+  return (
+    <div className="dp__gallery">
+      <div className="dp__gallery-track" style={{ transform: `translateX(-${idx * 100}%)` }}>
+        {images.map((src, i) => (
+          <img key={i} src={src} alt={`Photo ${i + 1}`} className="dp__gallery-img" />
+        ))}
+      </div>
+      <button className="dp__gallery-btn dp__gallery-btn--prev" onClick={prev} aria-label="Previous">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button className="dp__gallery-btn dp__gallery-btn--next" onClick={next} aria-label="Next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div className="dp__gallery-dots">
+        {images.map((_, i) => (
+          <button key={i} className={`dp__gallery-dot${i === idx ? ' dp__gallery-dot--active' : ''}`} onClick={() => setIdx(i)} aria-label={`Photo ${i + 1}`} />
+        ))}
+      </div>
+      <span className="dp__gallery-counter">{idx + 1} / {images.length}</span>
+    </div>
+  );
+}
+
+const IconCheck = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+const IconLock = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+  </svg>
+);
+
+/* ─── Trailer Modal ────────────────────────────────────────────────────────── */
+function TrailerModal({ url, title, onClose }) {
+  // Accept full Vimeo or YouTube URL and extract the embeddable src
+  const embedSrc = React.useMemo(() => {
+    if (!url) return null;
+    // Vimeo: https://vimeo.com/123456789
+    const vimeo = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}?autoplay=1&color=c9a84c&title=0&byline=0&portrait=0`;
+    // YouTube: various formats
+    const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    if (yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`;
+    return null;
+  }, [url]);
+
+  // Close on Escape
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  if (!embedSrc) return null;
+
+  return (
+    <div className="tm__overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="tm">
+        <button className="tm__close" onClick={onClose} aria-label="Close trailer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div className="tm__player">
+          <iframe
+            src={embedSrc}
+            title={`${title} — Trailer`}
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+        <p className="tm__caption">{title} — Official Trailer</p>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Episode thumbnail gradients ─────────────────────────────────────────── */
 const EP_GRADIENTS = [
   'linear-gradient(135deg, #1a1020 0%, #0d0f2a 100%)',
@@ -12,17 +135,301 @@ const EP_GRADIENTS = [
   'linear-gradient(135deg, #1a1010 0%, #200a0a 100%)',
   'linear-gradient(135deg, #0f1a1a 0%, #0a1818 100%)',
 ];
+/* ─── Reward Modal ─────────────────────────────────────────────────────────── */
+function RewardModal({ item, onClose }) {
+  const [step, setStep]                 = useState(1);
+  const [selectedTier, setSelectedTier] = useState(null);
+  const [customAmount, setCustomAmount] = useState('');
+  const [tipAmount, setTipAmount]       = useState(5);
+  const [form, setForm]               = useState({ name: '', email: '', card: '', expiry: '', cvv: '' });
+
+  const tiers        = item.rewardTiers || [];
+  const steps        = ['Reward', 'Details', 'Payment', 'Consideration', 'Confirm'];
+  const MAX_TIP      = 250;
+  const effectiveAmt = selectedTier?.amount === 'custom' ? Number(customAmount) : selectedTier?.amount;
+  const totalAmt     = (effectiveAmt || 0) + tipAmount;
+  const fmtAmt       = (n) => (n != null ? Number(n).toLocaleString() : '');
+
+  const handleOverlay  = (e) => { if (e.target === e.currentTarget) onClose(); };
+  const upd            = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const formatCard     = (v) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+  const formatExpiry   = (v) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length >= 2 ? d.slice(0, 2) + '/' + d.slice(2) : d; };
+
+  const canContinue1 = selectedTier && (selectedTier.amount !== 'custom' || (customAmount && Number(customAmount) > 0));
+  const canContinue2 = form.name.trim() && form.email.includes('@');
+  const canContinue3 = form.card.length >= 19 && form.expiry.length >= 5 && form.cvv.length >= 3;
+
+  return (
+    <div className="rm__overlay" onClick={handleOverlay}>
+      <div className="rm" role="dialog" aria-modal="true">
+
+        {/* ── Header ── */}
+        <div className="rm__header">
+          <div className="rm__steps">
+            {steps.map((label, i) => {
+              const n = i + 1, active = step === n, done = step > n;
+              return (
+                <React.Fragment key={n}>
+                  {i > 0 && <div className={`rm__step-line${done ? ' rm__step-line--done' : ''}`} />}
+                  <div className={`rm__step${active ? ' rm__step--active' : ''}${done ? ' rm__step--done' : ''}`}>
+                    <span className="rm__step-num">{done ? <IconCheck /> : n}</span>
+                    <span className="rm__step-label">{label}</span>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+          </div>
+          <button className="rm__close" onClick={onClose} aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* ── Step 1: Choose Reward ── */}
+        {step === 1 && (
+          <div className="rm__body">
+            <h2 className="rm__title">Choose Your Reward</h2>
+            <p className="rm__subtitle">Support <em>{item.title}</em> and receive exclusive perks.</p>
+            <div className="rm__tiers">
+              {tiers.map((tier) => {
+                const spotsLeft = tier.available != null ? tier.available - (tier.backerCount || 0) : null;
+                const isSel = selectedTier?.amount === tier.amount;
+                return (
+                  <button key={tier.amount} className={`rm__tier${isSel ? ' rm__tier--selected' : ''}`} onClick={() => { setSelectedTier(tier); setStep(2); }}>
+                    {tier.image && <img src={tier.image} alt={tier.title} className="rm__tier-img" />}
+                    <div className="rm__tier-body">
+                      <div className="rm__tier-header">
+                        <span className="rm__tier-amount">${fmtAmt(tier.amount)}</span>
+                        <span className="rm__tier-name">{tier.title}</span>
+                      </div>
+                      <p className="rm__tier-desc">{tier.description}</p>
+                      <div className="rm__tier-stats">
+                        <span className="rm__stat-backers">{(tier.backerCount || 0).toLocaleString()} backers</span>
+                        <span className="rm__stat-sep">·</span>
+                        <span className="rm__stat-spots">{spotsLeft != null ? `${spotsLeft} left` : 'Unlimited'}</span>
+                      </div>
+                    </div>
+                    {isSel && <span className="rm__tier-check"><IconCheck /></span>}
+                  </button>
+                );
+              })}
+
+              {/* Custom amount */}
+              <button
+                className={`rm__tier rm__tier--custom${selectedTier?.amount === 'custom' ? ' rm__tier--selected' : ''}`}
+                onClick={() => { setSelectedTier({ amount: 'custom', title: 'Custom Amount', description: '' }); setStep(2); }}
+              >
+                <div className="rm__custom-thumb">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </div>
+                <div className="rm__tier-body">
+                  <div className="rm__tier-header">
+                    <span className="rm__tier-name" style={{ fontSize: '14px', fontWeight: 600 }}>Choose Your Amount</span>
+                  </div>
+                  <p className="rm__tier-desc">Support the film with any amount you choose.</p>
+                  {selectedTier?.amount === 'custom' && (
+                    <div className="rm__custom-row" onClick={(e) => e.stopPropagation()}>
+                      <span className="rm__custom-prefix">$</span>
+                      <input type="number" min="1" placeholder="Enter amount" className="rm__custom-input"
+                        value={customAmount} onChange={(e) => setCustomAmount(e.target.value)} autoFocus />
+                    </div>
+                  )}
+                </div>
+              </button>
+            </div>
+            <div className="rm__footer">
+              <button className="btn btn--secondary rm__btn-back" onClick={onClose}>Cancel</button>
+              <button className="btn btn--gold" disabled={!canContinue1} onClick={() => setStep(2)}>Continue →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 2: Details ── */}
+        {step === 2 && (
+          <div className="rm__body">
+            <h2 className="rm__title">Your Details</h2>
+            <p className="rm__subtitle">Where should we send your reward confirmation?</p>
+            <div className="rm__recap">
+              {selectedTier?.image && <img src={selectedTier.image} alt="" className="rm__recap-img" />}
+              <div className="rm__recap-body">
+                <div className="rm__recap-name">{selectedTier?.title}</div>
+                <div className="rm__recap-amt">${fmtAmt(effectiveAmt)}</div>
+              </div>
+            </div>
+            <div className="rm__form">
+              <div className="rm__field">
+                <label className="rm__label">Full Name</label>
+                <input className="rm__input" placeholder="Jane Smith" value={form.name} onChange={upd('name')} />
+              </div>
+              <div className="rm__field">
+                <label className="rm__label">Email Address</label>
+                <input className="rm__input" type="email" placeholder="you@example.com" value={form.email} onChange={upd('email')} />
+              </div>
+            </div>
+            <div className="rm__footer">
+              <button className="btn btn--secondary rm__btn-back" onClick={() => setStep(1)}>← Back</button>
+              <button className="btn btn--gold" disabled={!canContinue2} onClick={() => setStep(3)}>Continue →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 3: Payment ── */}
+        {step === 3 && (
+          <div className="rm__body">
+            <h2 className="rm__title">Payment</h2>
+            <p className="rm__subtitle">Demo only — no real charges will be made.</p>
+            <div className="rm__recap">
+              {selectedTier?.image && <img src={selectedTier.image} alt="" className="rm__recap-img" />}
+              <div className="rm__recap-body">
+                <div className="rm__recap-name">{selectedTier?.title}</div>
+                <div className="rm__recap-amt">${fmtAmt(effectiveAmt)}</div>
+              </div>
+            </div>
+            <div className="rm__form">
+              <div className="rm__field">
+                <label className="rm__label">Cardholder Name</label>
+                <input className="rm__input" placeholder="Jane Smith" value={form.name} onChange={upd('name')} />
+              </div>
+              <div className="rm__field">
+                <label className="rm__label">Card Number</label>
+                <input className="rm__input rm__input--card" placeholder="1234  5678  9012  3456"
+                  value={form.card} onChange={(e) => setForm((f) => ({ ...f, card: formatCard(e.target.value) }))} />
+              </div>
+              <div className="rm__row">
+                <div className="rm__field">
+                  <label className="rm__label">Expiry</label>
+                  <input className="rm__input" placeholder="MM / YY"
+                    value={form.expiry} onChange={(e) => setForm((f) => ({ ...f, expiry: formatExpiry(e.target.value) }))} />
+                </div>
+                <div className="rm__field">
+                  <label className="rm__label">CVV</label>
+                  <input className="rm__input" placeholder="123" maxLength={4} value={form.cvv} onChange={upd('cvv')} />
+                </div>
+              </div>
+            </div>
+            <div className="rm__secure-note"><IconLock /><span>Payments are encrypted and secure</span></div>
+            <div className="rm__footer">
+              <button className="btn btn--secondary rm__btn-back" onClick={() => setStep(2)}>← Back</button>
+              <button className="btn btn--gold" disabled={!canContinue3} onClick={() => setStep(4)}>Next →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 4: Tip ── */}
+        {step === 4 && (
+          <div className="rm__body">
+            <div className="rm__tip-intro">
+              <div className="rm__tip-heart">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+              </div>
+              <p className="rm__tip-msg">
+                All of your financial support goes directly to the filmmaker.<br/>
+                Consider adding a tip to help keep FilmLauncher running.
+              </p>
+            </div>
+
+            <div className="rm__tip-display">
+              <span className="rm__tip-currency">$</span>
+              <span className="rm__tip-value">{tipAmount}</span>
+            </div>
+
+            <input
+              type="range" min="0" max={MAX_TIP} step="1"
+              value={tipAmount}
+              className="rm__tip-slider"
+              style={{ '--pct': `${(tipAmount / MAX_TIP) * 100}%` }}
+              onChange={(e) => setTipAmount(Number(e.target.value))}
+            />
+
+            <div className="rm__tip-presets">
+              {[0, 3, 5, 10, 25, 50].map((v) => (
+                <button key={v}
+                  className={`rm__tip-preset${tipAmount === v ? ' rm__tip-preset--active' : ''}`}
+                  onClick={() => setTipAmount(v)}>
+                  {v === 0 ? 'No tip' : `$${v}`}
+                </button>
+              ))}
+            </div>
+
+            <div className="rm__field" style={{ marginBottom: 24 }}>
+              <label className="rm__label">Or enter your own amount</label>
+              <div className="rm__custom-row">
+                <span className="rm__custom-prefix">$</span>
+                <input
+                  type="number" min="0" max="1000" placeholder="0"
+                  className="rm__custom-input"
+                  value={tipAmount || ''}
+                  onChange={(e) => setTipAmount(Math.min(1000, Math.max(0, Number(e.target.value) || 0)))}
+                />
+              </div>
+            </div>
+
+            <div className="rm__total">
+              <div className="rm__total-row">
+                <span>{selectedTier?.title}</span>
+                <span>${fmtAmt(effectiveAmt)}</span>
+              </div>
+              <div className="rm__total-row">
+                <span>Tip to FilmLauncher</span>
+                <span>${fmtAmt(tipAmount)}</span>
+              </div>
+              <div className="rm__total-row rm__total-row--grand">
+                <span>Total</span>
+                <span>${fmtAmt(totalAmt)}</span>
+              </div>
+            </div>
+
+            <div className="rm__footer">
+              <button className="btn btn--secondary rm__btn-back" onClick={() => setStep(3)}>← Back</button>
+              <button className="btn btn--gold" onClick={() => setStep(5)}>
+                Pay ${fmtAmt(totalAmt)}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 5: Confirmation ── */}
+        {step === 5 && (
+          <div className="rm__body rm__body--confirm">
+            <div className="rm__confirm-check">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <h2 className="rm__title">You're a Backer!</h2>
+            <p className="rm__subtitle">
+              Thank you for supporting <em>{item.title}</em>. A confirmation has been sent to <strong>{form.email}</strong>.
+            </p>
+            <div className="rm__confirm-reward">
+              {selectedTier?.image && <img src={selectedTier.image} alt="" className="rm__confirm-img" />}
+              <div>
+                <div className="rm__confirm-label">Your reward</div>
+                <div className="rm__confirm-name">{selectedTier?.title}</div>
+                <div className="rm__confirm-amt">${fmtAmt(effectiveAmt)}</div>
+              </div>
+            </div>
+            <div className="rm__footer rm__footer--center">
+              <button className="btn btn--secondary" onClick={onClose}>Close</button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
 
 /* ─── Episode row ──────────────────────────────────────────────────────────── */
 function EpisodeRow({ ep, index }) {
   return (
     <div className="dp__episode">
       <div className="dp__episode-thumb" style={{ background: EP_GRADIENTS[index % EP_GRADIENTS.length] }}>
-        <div className="dp__episode-play-overlay">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-            <polygon points="5 3 19 12 5 21 5 3"/>
-          </svg>
-        </div>
+        <div className="dp__episode-play-overlay"><IconPlay size={22} /></div>
         <span className="dp__episode-num">E{ep.ep}</span>
       </div>
       <div className="dp__episode-info">
@@ -36,120 +443,33 @@ function EpisodeRow({ ep, index }) {
   );
 }
 
-/* ─── Series episode browser ───────────────────────────────────────────────── */
-function SeriesBrowser({ item }) {
-  const seasonCount = item.seasons || 1;
-  const [activeSeason, setActiveSeason] = useState(1);
-  const seasons = Array.from({ length: seasonCount }, (_, i) => i + 1);
-  const episodes = item.episodes?.[activeSeason] ?? [];
-
-  return (
-    <div className="dp__series-browser">
-      <div className="dp__series-header">
-        <h3 className="dp__series-title">Episodes</h3>
-        <div className="dp__season-pills">
-          {seasons.map((s) => (
-            <button
-              key={s}
-              className={`dp__season-pill ${activeSeason === s ? 'dp__season-pill--active' : ''}`}
-              onClick={() => setActiveSeason(s)}
-            >
-              Season {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="dp__episode-list">
-        {episodes.length > 0 ? (
-          episodes.map((ep, i) => <EpisodeRow key={ep.ep} ep={ep} index={i} />)
-        ) : (
-          <div className="dp__episodes-empty">
-            <p>Episode guide coming soon.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Funding panel ────────────────────────────────────────────────────────── */
-function FundingPanel({ item }) {
-  const pct = Math.round((item.fundingRaised / item.fundingGoal) * 100);
-  return (
-    <div className="dp__funding-panel">
-      <div className="dp__funding-panel-header">
-        <h3 className="dp__funding-panel-title">Campaign Progress</h3>
-        {item.fundingDaysLeft <= 7 && (
-          <span className="dp__funding-urgent">
-            {item.fundingDaysLeft === 0 ? 'Last day!' : `${item.fundingDaysLeft} days left`}
-          </span>
-        )}
-      </div>
-      <div className="dp__funding-stats">
-        <div className="dp__funding-stat">
-          <span className="dp__funding-stat-val">${item.fundingRaised.toLocaleString()}</span>
-          <span className="dp__funding-stat-label">raised</span>
-        </div>
-        <div className="dp__funding-stat">
-          <span className="dp__funding-stat-val">${item.fundingGoal.toLocaleString()}</span>
-          <span className="dp__funding-stat-label">goal</span>
-        </div>
-        <div className="dp__funding-stat">
-          <span className="dp__funding-stat-val">{item.fundingBackers?.toLocaleString()}</span>
-          <span className="dp__funding-stat-label">backers</span>
-        </div>
-        <div className="dp__funding-stat">
-          <span className="dp__funding-stat-val">{item.fundingDaysLeft}</span>
-          <span className="dp__funding-stat-label">days left</span>
-        </div>
-      </div>
-      <div className="dp__funding-bar-wrap">
-        <div className="dp__funding-bar-track">
-          <div className="dp__funding-bar-fill" style={{ width: `${Math.min(pct, 100)}%` }} />
-        </div>
-        <span className="dp__funding-bar-pct">{pct}%</span>
-      </div>
-      <button className="btn btn--gold dp__cta-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        Back This Film
-      </button>
-    </div>
-  );
-}
-
-/* ─── Reward tier ──────────────────────────────────────────────────────────── */
-function RewardTier({ tier, index }) {
-  const icons = ['🎬', '⭐', '🏆', '🎁'];
-  return (
-    <div className="dp__tier">
-      <div className="dp__tier-top">
-        <span className="dp__tier-icon">{icons[index] ?? '🎁'}</span>
-        <div className="dp__tier-header">
-          <span className="dp__tier-amount">${tier.amount}</span>
-          <span className="dp__tier-title">{tier.title}</span>
-        </div>
-      </div>
-      <p className="dp__tier-desc">{tier.description}</p>
-      <button className="dp__tier-btn">Select Reward</button>
-    </div>
-  );
-}
-
 /* ─── Main page ────────────────────────────────────────────────────────────── */
 export default function DetailPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [tab, setTab] = useState('overview');
-  const [backdropLoaded, setBackdropLoaded] = useState(false);
-  const [backdropError, setBackdropError] = useState(false);
-  const [posterError, setPosterError] = useState(false);
+  const { id }      = useParams();
+  const navigate    = useNavigate();
+
+  const [backdropLoaded, setBackdropLoaded]   = useState(false);
+  const [backdropError, setBackdropError]     = useState(false);
+  const [posterError, setPosterError]         = useState(false);
+  const [activeSeason, setActiveSeason]       = useState(1);
+  const [seasonPickerOpen, setSeasonPickerOpen] = useState(false);
+  const [tab, setTab]                         = useState('overview');
+  const [rewardModalOpen, setRewardModalOpen]   = useState(false);
+  const [trailerModalOpen, setTrailerModalOpen] = useState(false);
 
   const item = allContent.find((c) => c.id === Number(id));
 
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [id]);
+  /* Reset on film change */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setActiveSeason(1);
+    setSeasonPickerOpen(false);
+    setTab('overview');
+    setBackdropLoaded(false);
+    setBackdropError(false);
+    setPosterError(false);
+    setRewardModalOpen(false);
+  }, [id]);
 
   useEffect(() => {
     document.title = item ? `${item.title} | FilmLauncher` : 'Not Found | FilmLauncher';
@@ -166,38 +486,52 @@ export default function DetailPage() {
     );
   }
 
-  const isFunding = item.type === 'funding';
-  const isSeries  = !!item.seasons;
+  const isFunding  = item.type === 'funding';
+  const isSeries   = !!item.seasons;
   const fundingPct = isFunding ? Math.round((item.fundingRaised / item.fundingGoal) * 100) : null;
-  const backdropSrc = item.backdrop || item.poster;
+  const backdropSrc     = item.backdrop || item.poster;
+  const seasonNums      = isSeries ? Array.from({ length: item.seasons }, (_, i) => i + 1) : [];
+  const currentEpisodes = isSeries ? (item.episodes?.[activeSeason] ?? []) : [];
+
+  const handleSeasonSelect = (s) => { setActiveSeason(s); setSeasonPickerOpen(false); };
 
   return (
     <div className="dp">
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div className="dp__hero">
+
+        {/* Backdrop — ref callback handles cached/instant local images */}
         {!backdropError && backdropSrc ? (
           <img
             src={backdropSrc} alt=""
             className={`dp__hero-img ${backdropLoaded ? 'dp__hero-img--loaded' : ''}`}
             onLoad={() => setBackdropLoaded(true)}
             onError={() => setBackdropError(true)}
+            ref={(el) => { if (el?.complete && el?.naturalWidth > 0) setBackdropLoaded(true); }}
           />
-        ) : <div className="dp__hero-fallback" />}
+        ) : item.poster ? (
+          <img src={item.poster} alt="" className="dp__hero-img dp__hero-img--loaded" />
+        ) : (
+          <div className="dp__hero-fallback" />
+        )}
 
         <div className="dp__hero-grad-bottom" />
         <div className="dp__hero-grad-top" />
         <div className="dp__hero-grad-left" />
         <div className="dp__hero-grad-right" />
 
-        <button className="dp__back" onClick={() => navigate(-1)} aria-label="Go back">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          Back
-        </button>
-
+        {/* ── Hero content block ────────────────────────────────────────── */}
         <div className="dp__hero-bottom">
+
+          {/* Back arrow */}
+          <button className="dp__back" onClick={() => navigate(-1)} aria-label="Go back">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+
+          {/* Badges */}
           <div className="dp__hero-badges">
             <span className={`badge ${isFunding ? 'badge--funding' : 'badge--streaming'}`}>
               {isFunding ? '★ NOW FUNDING' : isSeries ? '▶ SERIES' : '▶ STREAMING'}
@@ -207,110 +541,179 @@ export default function DetailPage() {
             ))}
           </div>
 
+          {/* Title */}
           <h1 className="dp__hero-title">{item.title}</h1>
           {item.tagline && <p className="dp__hero-tagline">{item.tagline}</p>}
 
+          {/* ── Funding progress — right below title ─────────────────── */}
+          {isFunding && (
+            <div className="dp__hero-funding">
+              <div className="dp__hero-funding-stats">
+                <span className="dp__hero-funding-raised">
+                  ${item.fundingRaised.toLocaleString()}
+                  <em> raised</em>
+                </span>
+                <span className="dp__hero-funding-pct">{fundingPct}%</span>
+              </div>
+              <div className="dp__hero-funding-track">
+                <div className="dp__hero-funding-fill" style={{ width: `${Math.min(fundingPct, 100)}%` }} />
+              </div>
+              <div className="dp__hero-funding-sub">
+                <span>${item.fundingGoal.toLocaleString()} goal · {item.fundingBackers?.toLocaleString()} backers</span>
+                <span>{item.fundingDaysLeft} days left</span>
+              </div>
+            </div>
+          )}
+
+          {/* ── Action buttons ────────────────────────────────────────── */}
           <div className="dp__hero-actions">
+
+            {/* Primary CTA */}
             {isFunding ? (
-              <>
-                <button className="btn btn--gold">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  Back This Film
-                </button>
-                <button className="dp__icon-btn" aria-label="View Rewards" onClick={() => setTab('rewards')}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                  </svg>
-                </button>
-              </>
+              <button className="btn btn--gold" onClick={() => setRewardModalOpen(true)}>
+                <IconStar size={14} />Back This Film
+              </button>
             ) : isSeries ? (
-              <>
-                <button className="btn btn--primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                  Play S1 E1
-                </button>
-                <button className="dp__icon-btn" aria-label="Add to Watchlist">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                </button>
-              </>
+              <button className="btn btn--primary">
+                <IconPlay size={14} />Play S{activeSeason} E1
+              </button>
             ) : (
-              <>
-                <button className="btn btn--primary">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                  Play Now
-                </button>
-                <button className="dp__icon-btn" aria-label="Add to Watchlist">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                </button>
-              </>
+              <button className="btn btn--primary">
+                <IconPlay size={14} />Play Now
+              </button>
             )}
-            <button className="dp__icon-btn" aria-label="Share">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {/* ── Body ──────────────────────────────────────────────────────────── */}
-      <div className="dp__body">
-        <div className="dp__body-inner">
+            {/* Season toggle (series only) */}
+            {isSeries && (
+              <button
+                className={`dp__season-toggle ${seasonPickerOpen ? 'dp__season-toggle--open' : ''}`}
+                onClick={() => setSeasonPickerOpen((o) => !o)}
+              >
+                Season {activeSeason}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                  style={{ transform: seasonPickerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+            )}
 
-          {/* ── Main column ────────────────────────────────────────────── */}
-          <div className="dp__main">
-
-            {/* Stats */}
-            <div className="dp__stats">
-              <span>{item.year}</span>
-              <span className="dp__stats-sep">·</span>
-              <span className="dp__rating-chip">{item.rating}</span>
-              <span className="dp__stats-sep">·</span>
-              <span>{item.duration}</span>
-              {item.director && (<><span className="dp__stats-sep">·</span><span>Dir. <strong>{item.director}</strong></span></>)}
-              {item.matchScore && (<><span className="dp__stats-sep">·</span><span className="dp__match">{item.matchScore}% Match</span></>)}
-            </div>
-
-            {/* Genre pills */}
-            <div className="dp__genres">
-              {item.genre.map((g) => <span key={g} className="dp__genre-pill">{g}</span>)}
-            </div>
-
-            {/* Funding tabs */}
-            {isFunding && (
-              <div className="dp__tabs">
-                {['overview', 'campaign', 'rewards'].map((t) => (
-                  <button key={t} className={`dp__tab ${tab === t ? 'dp__tab--active' : ''}`} onClick={() => setTab(t)}>
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
-                  </button>
-                ))}
+            {/* Trailer — always shown on funding; shown elsewhere only when URL exists */}
+            {(item.trailerUrl || isFunding) && (
+              <div className="dp__icon-wrap">
+                <button
+                  className={`dp__icon-btn${!item.trailerUrl ? ' dp__icon-btn--soon' : ''}`}
+                  aria-label="Play Trailer"
+                  onClick={() => item.trailerUrl && setTrailerModalOpen(true)}
+                >
+                  <IconTrailer />
+                </button>
+                <span className="dp__icon-label">Trailer</span>
               </div>
             )}
 
-            {/* Overview / description */}
-            {(tab === 'overview' || !isFunding) && (
-              <div className="dp__section">
-                <p className="dp__description">{item.description}</p>
+            {/* Watchlist */}
+            <div className="dp__icon-wrap">
+              <button className="dp__icon-btn" aria-label="Add to Watchlist"><IconPlus /></button>
+              <span className="dp__icon-label">Watchlist</span>
+            </div>
 
-                {isFunding && (
-                  <div className="dp__funding-summary">
-                    <div className="dp__funding-summary-bar">
-                      <div className="dp__funding-summary-fill" style={{ width: `${Math.min(fundingPct, 100)}%` }} />
-                    </div>
-                    <div className="dp__funding-summary-row">
-                      <span className="dp__funding-summary-pct">{fundingPct}% funded</span>
-                      <span className="dp__funding-summary-days">{item.fundingDaysLeft} days remaining</span>
-                    </div>
-                  </div>
+            {/* Share */}
+            <div className="dp__icon-wrap">
+              <button className="dp__icon-btn" aria-label="Share"><IconShare /></button>
+              <span className="dp__icon-label">Share</span>
+            </div>
+
+          </div>
+
+          {/* ── Series: meta + description OR season picker ──────────── */}
+          {isSeries && !seasonPickerOpen && (
+            <div className="dp__hero-meta" key="meta">
+              <div className="dp__stats">
+                <span>{item.year}</span>
+                <span className="dp__stats-sep">·</span>
+                <span className="dp__rating-chip">{item.rating}</span>
+                <span className="dp__stats-sep">·</span>
+                <span>{item.duration}</span>
+                {item.director && (
+                  <><span className="dp__stats-sep">·</span><span>Cr. <strong>{item.director}</strong></span></>
                 )}
+                {item.matchScore && (
+                  <><span className="dp__stats-sep">·</span><span className="dp__match">{item.matchScore}% Match</span></>
+                )}
+              </div>
+              <div className="dp__genres">
+                {item.genre.map((g) => <span key={g} className="dp__genre-pill">{g}</span>)}
+              </div>
+              <p className="dp__hero-desc">{item.description}</p>
+            </div>
+          )}
 
+          {isSeries && seasonPickerOpen && (
+            <div className="dp__season-panel" key="seasons">
+              {seasonNums.map((s) => (
+                <button
+                  key={s}
+                  className={`dp__season-btn ${activeSeason === s ? 'dp__season-btn--active' : ''}`}
+                  onClick={() => handleSeasonSelect(s)}
+                >Season {s}</button>
+              ))}
+            </div>
+          )}
+
+        </div>
+
+        {/* Poster — absolutely positioned bottom-right (series + funding) */}
+        {(isSeries || isFunding) && item.poster && !posterError && (
+          <img src={item.poster} alt={item.title} className="dp__hero-poster"
+            onError={() => setPosterError(true)} />
+        )}
+
+      </div>
+
+      {/* ── Series body ───────────────────────────────────────────────────── */}
+      {isSeries && (
+        <div className="dp__series-body">
+          <div className="dp__ep-bar">
+            <span className="dp__ep-season-label">Season {activeSeason}</span>
+            <span className="dp__ep-count">{currentEpisodes.length} episodes</span>
+          </div>
+          <div className="dp__episode-list">
+            {currentEpisodes.map((ep, i) => <EpisodeRow key={ep.ep} ep={ep} index={i} />)}
+          </div>
+        </div>
+      )}
+
+      {/* ── Funding body ──────────────────────────────────────────────────── */}
+      {isFunding && (
+        <div className="dp__body">
+          <div className="dp__funding-body">
+
+            {/* Tabs */}
+            <div className="dp__tabs">
+              {['overview', 'updates', 'backers'].map((t) => (
+                <button key={t} className={`dp__tab ${tab === t ? 'dp__tab--active' : ''}`} onClick={() => setTab(t)}>
+                  {{ overview: 'Overview', updates: 'Updates', backers: 'Backers' }[t]}
+                  {t === 'updates' && item.updates?.length > 0 && (
+                    <span className="dp__tab-badge">{item.updates.length}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {tab === 'overview' && (
+              <div className="dp__section">
+                <div className="dp__stats dp__stats--body">
+                  <span>{item.year}</span>
+                  <span className="dp__stats-sep">·</span>
+                  <span className="dp__rating-chip">{item.rating}</span>
+                  <span className="dp__stats-sep">·</span>
+                  <span>{item.duration}</span>
+                  {item.director && (<><span className="dp__stats-sep">·</span><span>Dir. <strong>{item.director}</strong></span></>)}
+                </div>
+                <div className="dp__genres dp__genres--body">
+                  {item.genre.map((g) => <span key={g} className="dp__genre-pill dp__genre-pill--body">{g}</span>)}
+                </div>
+                <p className="dp__description">{item.description}</p>
                 {item.cast && item.cast[0] !== 'Documentary' && item.cast[0] !== 'Casting in progress' && (
                   <div className="dp__cast">
                     <h4 className="dp__section-label">Cast</h4>
@@ -319,66 +722,167 @@ export default function DetailPage() {
                     </div>
                   </div>
                 )}
-
                 {item.awards?.length > 0 && (
                   <div className="dp__awards">
                     <h4 className="dp__section-label">Recognition</h4>
                     <div className="dp__awards-list">
                       {item.awards.map((a) => (
                         <span key={a} className="dp__award-chip">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--gold)">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                          </svg>
-                          {a}
+                          <IconStar size={10} />{a}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
-
-                {/* Series episode browser */}
-                {isSeries && <SeriesBrowser item={item} />}
               </div>
             )}
 
-            {/* Campaign tab */}
-            {tab === 'campaign' && isFunding && (
+            {/* ── Updates tab ──────────────────────────────────────────── */}
+            {tab === 'updates' && (
               <div className="dp__section">
-                <p className="dp__description">{item.description}</p>
-                <FundingPanel item={item} />
+                {item.updates?.length > 0 ? (
+                  <div className="dp__updates">
+                    {item.updates.map((u, i) => (
+                      <article key={u.id} className="dp__update">
+                        <div className="dp__update-meta">
+                          <span className="dp__update-num">Update {item.updates.length - i}</span>
+                          <span className="dp__update-date">{u.date}</span>
+                        </div>
+                        <h3 className="dp__update-title">{u.title}</h3>
+                        {u.body.split('\n\n').map((para, pi) => (
+                          <p key={pi} className="dp__update-body">{para}</p>
+                        ))}
+                        {u.images?.length > 0 && <UpdateGallery images={u.images} />}
+                        {u.videoUrl && getEmbedUrl(u.videoUrl) && (
+                          <div className="dp__update-video">
+                            <iframe
+                              src={getEmbedUrl(u.videoUrl)}
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen title={u.title}
+                            />
+                          </div>
+                        )}
+                        <div className="dp__update-author">
+                          <span className="dp__update-avatar">{u.author.charAt(0)}</span>
+                          <span className="dp__update-byline">{u.author} &middot; {u.authorRole}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="dp__empty-state">
+                    <span className="dp__empty-icon">📋</span>
+                    <p>No campaign updates yet.</p>
+                    <p className="dp__empty-sub">Check back soon for news from the creators.</p>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Rewards tab */}
-            {tab === 'rewards' && isFunding && item.rewardTiers && (
+            {/* ── Backers tab ───────────────────────────────────────────── */}
+            {tab === 'backers' && (
               <div className="dp__section">
-                <h4 className="dp__section-label" style={{ marginBottom: 20 }}>Choose a Reward Tier</h4>
-                <div className="dp__tiers">
-                  {item.rewardTiers.map((tier, i) => <RewardTier key={tier.amount} tier={tier} index={i} />)}
+                <div className="dp__backers-summary">
+                  <span className="dp__backers-count">{item.fundingBackers?.toLocaleString()} <em>backers</em></span>
+                  <span className="dp__backers-sep">·</span>
+                  <span className="dp__backers-raised">${item.fundingRaised?.toLocaleString()} <em>raised</em></span>
                 </div>
+                {item.backers?.length > 0 ? (
+                  <>
+                    <div className="dp__backers-list">
+                      {item.backers.map((b, i) => (
+                        <div key={i} className="dp__backer">
+                          <div className="dp__backer-avatar">
+                            {b.anonymous ? '?' : b.name.charAt(0)}
+                          </div>
+                          <div className="dp__backer-info">
+                            <span className="dp__backer-name">{b.anonymous ? 'Anonymous Backer' : b.name}</span>
+                            <span className="dp__backer-tier">{b.tier}</span>
+                          </div>
+                          <div className="dp__backer-right">
+                            <span className="dp__backer-amount">${b.amount.toLocaleString()}</span>
+                            <span className="dp__backer-time">
+                              {b.daysAgo === 0 ? 'today' : b.daysAgo === 1 ? '1 day ago' : `${b.daysAgo}d ago`}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {item.fundingBackers > item.backers.length && (
+                      <p className="dp__backers-more">
+                        + {(item.fundingBackers - item.backers.length).toLocaleString()} more backers
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="dp__empty-state">
+                    <span className="dp__empty-icon">🎬</span>
+                    <p>Be the first to back this project.</p>
+                  </div>
+                )}
               </div>
             )}
+
           </div>
-
-          {/* ── Sidebar ──────────────────────────────────────────────────── */}
-          <aside className="dp__sidebar">
-            {/* Poster */}
-            {item.poster && !posterError && (
-              <div className="dp__sidebar-poster">
-                <img
-                  src={item.poster} alt={item.title}
-                  className="dp__poster-img"
-                  onError={() => setPosterError(true)}
-                />
-              </div>
-            )}
-
-            {/* Funding panel */}
-            {isFunding && <FundingPanel item={item} />}
-          </aside>
-
         </div>
-      </div>
+      )}
+
+      {/* ── Movie body ────────────────────────────────────────────────────── */}
+      {!isSeries && !isFunding && (
+        <div className="dp__body">
+          <div className="dp__body-inner">
+            <div className="dp__main">
+              <div className="dp__stats dp__stats--body">
+                <span>{item.year}</span>
+                <span className="dp__stats-sep">·</span>
+                <span className="dp__rating-chip">{item.rating}</span>
+                <span className="dp__stats-sep">·</span>
+                <span>{item.duration}</span>
+                {item.director && (<><span className="dp__stats-sep">·</span><span>Dir. <strong>{item.director}</strong></span></>)}
+                {item.matchScore && (<><span className="dp__stats-sep">·</span><span className="dp__match">{item.matchScore}% Match</span></>)}
+              </div>
+              <div className="dp__genres dp__genres--body">
+                {item.genre.map((g) => <span key={g} className="dp__genre-pill dp__genre-pill--body">{g}</span>)}
+              </div>
+              <p className="dp__description">{item.description}</p>
+              {item.cast && item.cast[0] !== 'Documentary' && (
+                <div className="dp__cast">
+                  <h4 className="dp__section-label">Cast</h4>
+                  <div className="dp__cast-list">
+                    {item.cast.map((c) => <span key={c} className="dp__cast-chip">{c}</span>)}
+                  </div>
+                </div>
+              )}
+              {item.awards?.length > 0 && (
+                <div className="dp__awards">
+                  <h4 className="dp__section-label">Recognition</h4>
+                  <div className="dp__awards-list">
+                    {item.awards.map((a) => (
+                      <span key={a} className="dp__award-chip">
+                        <IconStar size={10} />{a}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <aside className="dp__sidebar">
+              {item.poster && !posterError && (
+                <div className="dp__sidebar-poster">
+                  <img src={item.poster} alt={item.title} className="dp__poster-img" onError={() => setPosterError(true)} />
+                </div>
+              )}
+            </aside>
+          </div>
+        </div>
+      )}
+
+      {/* ── Reward modal ─────────────────────────────────────────────────── */}
+      {rewardModalOpen && <RewardModal item={item} onClose={() => setRewardModalOpen(false)} />}
+
+      {/* ── Trailer modal ────────────────────────────────────────────────── */}
+      {trailerModalOpen && <TrailerModal url={item.trailerUrl} title={item.title} onClose={() => setTrailerModalOpen(false)} />}
+
     </div>
   );
 }

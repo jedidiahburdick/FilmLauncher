@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ContentRow from './components/ContentRow';
 import DetailPage from './pages/DetailPage';
-import { allContent, rows, heroContent } from './data/content';
+import { allContent, rows, heroItems } from './data/content';
 import './App.css';
 
 function BrowsePage({ activeFilter }) {
@@ -29,16 +29,17 @@ function BrowsePage({ activeFilter }) {
     return rows;
   }, [activeFilter]);
 
-  const heroItem = useMemo(() => {
+  const currentHeroItems = useMemo(() => {
     if (activeFilter === 'funding') {
-      return allContent.find((c) => c.type === 'funding' && c.rows.includes('featured')) || allContent.find((c) => c.type === 'funding');
+      const featured = allContent.filter((c) => c.type === 'funding' && c.rows.includes('featured'));
+      return featured.length ? featured : [allContent.find((c) => c.type === 'funding')].filter(Boolean);
     }
-    return heroContent;
+    return heroItems;
   }, [activeFilter]);
 
   return (
     <>
-      <Hero item={heroItem} />
+      <Hero items={currentHeroItems} />
 
       <main className="app__main">
         {filteredRows.map((row) => {

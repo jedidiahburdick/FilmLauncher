@@ -1,10 +1,186 @@
-import pilgrimsImg from '../assets/pilgrims-progress.png';
+import pilgrimsImg       from '../assets/pilgrims-progress.png';
+import sendProofPoster   from '../assets/send-proof-poster.png';
+import sendProofHero     from '../assets/send-proof-hero.jpg';
+import bloodThronePoster from '../assets/ABloodThrone-poster.webp';
+import bloodThroneHero   from '../assets/blood-throne-hero.jpg';
+import goodPoster        from '../assets/good-poster.jpg';
+import goodHero          from '../assets/good-hero.jpg';
+import douglasPoster     from '../assets/douglas-poster.png';
+import douglasHero       from '../assets/douglas-hero.png';
+import silkTreesPoster   from '../assets/silk-trees-poster.jpg';
+import silkTreesHero     from '../assets/silk-trees-hero.png';
+import twelveSecPoster   from '../assets/twelve-seconds-poster.jpg';
+import twelveSecHero     from '../assets/twelve-seconds-hero.png';
+import ericPoster        from '../assets/eric-poster.png';
+import ericHero          from '../assets/eric-hero.jpg';
 
 const T = 'https://media.themoviedb.org/t/p/w500';
 const TB = 'https://media.themoviedb.org/t/p/original';
 
+/* ─── Shared reward tiers (all funding projects) ─────────────────────────── */
+// b = { amount: backerCount } overrides per project
+const stdTiers = (b = {}) => [
+  { amount: 25,   title: 'Thank You Credit',          description: 'Your name in the film\'s closing credits — forever part of this story.',                                                          image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=180&h=110&fit=crop', available: null, backerCount: b[25]   ?? 0 },
+  { amount: 50,   title: 'Signed Movie Poster',        description: 'A signed limited-edition art poster from the production, shipped to your door.',                                                  image: 'https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?w=180&h=110&fit=crop', available: 200,  backerCount: b[50]   ?? 0 },
+  { amount: 100,  title: 'Signed T-Shirt',             description: 'A limited-edition signed crew t-shirt featuring the film\'s key art.',                                                           image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=180&h=110&fit=crop', available: 100,  backerCount: b[100]  ?? 0 },
+  { amount: 250,  title: 'Associate Producer Credit',  description: 'Associate Producer credit on the finished film + all previous rewards.',                                                          image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=180&h=110&fit=crop', available: 50,   backerCount: b[250]  ?? 0 },
+  { amount: 1000, title: 'Dinner with the Filmmakers', description: 'An exclusive dinner with the director and core creative team during production.',                                                  image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=180&h=110&fit=crop', available: 15,   backerCount: b[1000] ?? 0 },
+  { amount: 2000, title: 'VIP Guest at Premiere',      description: 'Two tickets to the world premiere + reception + red carpet access + all previous rewards.',                                       image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=180&h=110&fit=crop', available: 10,   backerCount: b[2000] ?? 0 },
+  { amount: 5000, title: 'Executive Producer Credit',  description: 'Full Executive Producer credit on the film + private call with the director + all previous rewards.',                            image: 'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=180&h=110&fit=crop', available: 5,    backerCount: b[5000] ?? 0 },
+];
+
 export const allContent = [
   // ─── STREAMING ──────────────────────────────────────────────────────────────
+  {
+    id: 28,
+    title: 'Send Proof',
+    tagline: 'If miracles are real... where\'s the evidence?',
+    description:
+      'When his pastor leaves the faith, filmmaker Elijah Stephens sets out on a global journey to find verifiable evidence for miracles. He interviews atheists and skeptics, medical researchers and academics, and those claiming miraculous healing — examining X-rays, MRI scans, and medical records to ask whether the supernatural can withstand scientific scrutiny.',
+    type: 'streaming',
+    year: 2021,
+    rating: 'NR',
+    duration: '1h 35m',
+    genre: ['Documentary', 'Faith', 'Investigation'],
+    director: 'Elijah Stephens',
+    cast: ['Elijah Stephens', 'William Lane Craig', 'Heidi Baker', 'Randy Clark', 'Candy Gunther Brown'],
+    poster: sendProofPoster,
+    backdrop: sendProofHero,
+    matchScore: 97,
+    awards: ['19 Festival Award Wins', 'Zion International Film Festival'],
+    trailerUrl: 'https://vimeo.com/369370923',
+    rows: ['featured', 'trending', 'new-releases'],
+  },
+  {
+    id: 31,
+    title: 'Douglass',
+    tagline: 'Born in chains. Died a legend. Every word in between is fire.',
+    description:
+      'He was born into chains and died a legend. Between those two facts lies one of the most extraordinary lives in American history.\n\nFREDERICK DOUGLASS is a four-part limited series tracing the impossible arc of a man who taught himself to read in secret, escaped slavery by sheer will, and became the most photographed American of the 19th century — a writer, orator, statesman, and prophet whose words still echo in every argument about freedom this country has not yet finished having.\n\nThis is not a monument. It is a man. Furious, brilliant, tender, and unrelenting — seen whole for the first time.',
+    type: 'funding',
+    year: 2025,
+    rating: 'NR',
+    duration: '4-Part Limited Series',
+    genre: ['Historical Drama', 'Biography', 'Limited Series'],
+    director: 'TBD',
+    cast: ['Casting in progress'],
+    poster: douglasPoster,
+    backdrop: douglasHero,
+    fundingGoal: 400000,
+    fundingRaised: 112000,
+    fundingBackers: 1847,
+    fundingDaysLeft: 34,
+    rewardTiers: stdTiers({ 25: 47, 50: 38, 100: 22, 250: 12, 1000: 4, 2000: 2, 5000: 0 }),
+    updates: [
+      {
+        id: 3,
+        date: 'March 22, 2025',
+        title: 'First Look: Visual Tone Reel',
+        body: 'A first look at the visual language we are building for DOUGLASS — shot this month on location in Virginia. No dialogue. No narration. Just light, space, and silence.',
+        author: 'The Douglass Team',
+        authorRole: 'Production',
+        images: null,
+        videoUrl: 'https://vimeo.com/369370923',
+      },
+      {
+        id: 2,
+        date: 'March 14, 2025',
+        title: 'We\'ve Crossed $100,000 — Here\'s What That Means',
+        body: 'When we launched this campaign, we dared to believe this story was ready to be told. Two weeks in, more than a thousand of you have answered back — and we\'ve crossed $100,000 raised.\n\nThis milestone unlocks our ability to begin location scouting in earnest. We\'ve identified three primary shoot locations across Maryland and Virginia that carry the historical weight this story demands. A few photos from this week\'s scouting trip below.\n\nThank you for believing in Frederick Douglass — and in us.',
+        author: 'The Douglass Team',
+        authorRole: 'Production',
+        images: [
+          'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&h=560&fit=crop&crop=center',
+          'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=900&h=560&fit=crop&crop=center',
+          'https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=900&h=560&fit=crop&crop=center',
+        ],
+        videoUrl: null,
+      },
+      {
+        id: 1,
+        date: 'February 28, 2025',
+        title: 'The Campaign Is Live',
+        body: 'Today we open the doors. DOUGLASS has been in development for three years — built scene by scene, word by word, around the belief that Frederick Douglass deserves a screen portrait equal to the full scale of his life.\n\nThis campaign is not just about funding a film. It is about building a community of people who believe that history, told honestly and beautifully, is not a niche interest — it is a necessity.\n\nWe are grateful you\'re here. Now let\'s make something extraordinary.',
+        author: 'The Douglass Team',
+        authorRole: 'Production',
+        images: null,
+        videoUrl: null,
+      },
+    ],
+    backers: [
+      { name: 'Marcus T.',    tier: 'Executive Backer', amount: 1000, daysAgo: 1,  anonymous: false },
+      { name: null,           tier: 'Patron',           amount: 250,  daysAgo: 2,  anonymous: true  },
+      { name: 'Renee J.',     tier: 'Advocate',         amount: 75,   daysAgo: 2,  anonymous: false },
+      { name: 'David W.',     tier: 'Believer',         amount: 25,   daysAgo: 3,  anonymous: false },
+      { name: 'Alicia F.',    tier: 'Patron',           amount: 250,  daysAgo: 4,  anonymous: false },
+      { name: null,           tier: 'Believer',         amount: 25,   daysAgo: 5,  anonymous: true  },
+      { name: 'Thomas H.',    tier: 'Executive Backer', amount: 1000, daysAgo: 6,  anonymous: false },
+      { name: 'Priya N.',     tier: 'Advocate',         amount: 75,   daysAgo: 7,  anonymous: false },
+      { name: 'James E.',     tier: 'Believer',         amount: 25,   daysAgo: 9,  anonymous: false },
+      { name: null,           tier: 'Patron',           amount: 250,  daysAgo: 10, anonymous: true  },
+      { name: 'Caroline B.',  tier: 'Advocate',         amount: 75,   daysAgo: 12, anonymous: false },
+      { name: 'Derek M.',     tier: 'Believer',         amount: 25,   daysAgo: 14, anonymous: false },
+    ],
+    rows: ['funding', 'featured', 'trending'],
+  },
+  {
+    id: 33,
+    title: 'Twelve Seconds',
+    tagline: 'Two brothers. One impossible question. Twelve seconds that changed everything.',
+    description:
+      'Wilbur Wright did not believe in luck. Neither did his brother.\n\nTWELVE SECONDS is the story of two men from Dayton, Ohio — bicycle mechanics, sons of a preacher, quietly extraordinary — who spent the better part of a decade staring at the sky and asking a question no one else had the patience to answer.\n\nOn December 17th, 1903, on a windswept beach in North Carolina, the answer lifted off the ground and flew for twelve seconds.\n\nWhat it cost them — and what it would eventually cost the world — took the rest of their lives to understand.',
+    type: 'funding',
+    year: 2025,
+    rating: 'NR',
+    duration: 'Feature Film',
+    genre: ['Historical Drama', 'Biography', 'Period'],
+    director: 'TBD',
+    cast: ['Casting in progress'],
+    poster: twelveSecPoster,
+    backdrop: twelveSecHero,
+    fundingGoal: 750000,
+    fundingRaised: 203400,
+    fundingBackers: 2614,
+    fundingDaysLeft: 52,
+    rewardTiers: stdTiers({ 25: 68, 50: 54, 100: 31, 250: 18, 1000: 6, 2000: 3, 5000: 1 }),
+    updates: [
+      {
+        id: 2,
+        date: 'March 15, 2025',
+        title: '27% Funded in Two Weeks — Thank You',
+        body: 'Two weeks ago we asked a question: is there an audience for a film that takes its time, trusts its subject, and refuses to turn history into spectacle?\n\nYou answered with $203,000 and counting.\n\nWe\'re now in active conversations with a cinematographer whose work you\'ve seen on three major period productions — someone who understands light the way Wilbur understood wind. We can\'t name names yet. But the visual language of TWELVE SECONDS is beginning to take shape, and it is extraordinary.\n\nMore updates coming as the pieces fall into place.',
+        author: 'The Twelve Seconds Team',
+        authorRole: 'Production',
+        image: null,
+        videoUrl: null,
+      },
+      {
+        id: 1,
+        date: 'March 1, 2025',
+        title: 'Why We\'re Making This Film',
+        body: 'Most people know the Wright Brothers the way they know Mount Rushmore — as monuments, fixed and distant. We want to give them back their hands.\n\nWilbur and Orville Wright were meticulous, obsessive, and genuinely funny. They kept records of everything. Their letters are still there — in the Library of Congress, in Dayton — and they read like the work of two people who had no idea they were about to change the world.\n\nTWELVE SECONDS is our attempt to tell that story without the halo. Just the work, the wind, and the twelve seconds that changed everything.',
+        author: 'The Twelve Seconds Team',
+        authorRole: 'Production',
+        image: null,
+        videoUrl: null,
+      },
+    ],
+    backers: [
+      { name: 'Eleanor S.',  tier: 'Kitty Hawk',       amount: 1000, daysAgo: 1,  anonymous: false },
+      { name: 'Robert K.',   tier: 'Patron of Flight', amount: 250,  daysAgo: 2,  anonymous: false },
+      { name: null,          tier: 'Pioneer',          amount: 25,   daysAgo: 3,  anonymous: true  },
+      { name: 'Henry V.',    tier: 'Patron of Flight', amount: 250,  daysAgo: 4,  anonymous: false },
+      { name: 'Maria C.',    tier: 'First Flight',     amount: 75,   daysAgo: 4,  anonymous: false },
+      { name: 'Samuel O.',   tier: 'Kitty Hawk',       amount: 1000, daysAgo: 5,  anonymous: false },
+      { name: null,          tier: 'First Flight',     amount: 75,   daysAgo: 6,  anonymous: true  },
+      { name: 'Grace T.',    tier: 'Pioneer',          amount: 25,   daysAgo: 7,  anonymous: false },
+      { name: 'Nathan P.',   tier: 'Patron of Flight', amount: 250,  daysAgo: 8,  anonymous: false },
+      { name: 'Lydia M.',    tier: 'First Flight',     amount: 75,   daysAgo: 10, anonymous: false },
+      { name: null,          tier: 'Pioneer',          amount: 25,   daysAgo: 11, anonymous: true  },
+      { name: 'Oliver F.',   tier: 'Kitty Hawk',       amount: 1000, daysAgo: 13, anonymous: false },
+    ],
+    rows: ['funding', 'featured', 'trending'],
+  },
   {
     id: 1,
     title: 'Oppenheimer',
@@ -22,7 +198,26 @@ export const allContent = [
     backdrop: `${TB}/rLb2cwF3Pazuxaj0sRXQ037tGI1.jpg`,
     matchScore: 98,
     awards: ['3 Academy Awards', 'Golden Globe Best Picture'],
-    rows: ['featured', 'trending', 'award-winners'],
+    rows: ['trending', 'award-winners'],
+  },
+  {
+    id: 32,
+    title: 'Silk Trees',
+    tagline: 'Grief blurs everything. Madness takes the rest.',
+    description:
+      'After the death of his wife, successful children\'s author Jude Meyers becomes a reclusive insomniac. Searching for peace, he agrees to try an experimental medication — but soon discovers that the line between fantasy and reality has become dangerously blurred. A haunting psychological thriller about grief, isolation, and the fragility of the mind.',
+    type: 'streaming',
+    year: 2017,
+    rating: 'NR',
+    duration: '1h 38m',
+    genre: ['Thriller', 'Psychological', 'Drama'],
+    director: 'Jedidiah Burdick',
+    cast: ['G. Michael Gray', 'Charity Ambrose', 'Bryan Andrews', 'Mark Bracich', 'William Cummings III', 'Kris Desautels', 'Ben Dubash', 'Alicia Gray'],
+    poster: silkTreesPoster,
+    backdrop: silkTreesHero,
+    trailerUrl: 'https://vimeo.com/162870042',
+    matchScore: 94,
+    rows: ['streaming', 'new-releases'],
   },
   {
     id: 2,
@@ -41,7 +236,7 @@ export const allContent = [
     backdrop: `${TB}/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg`,
     matchScore: 97,
     awards: ['BAFTA Nominated'],
-    rows: ['featured', 'trending', 'new-releases'],
+    rows: ['trending', 'new-releases'],
   },
   {
     id: 3,
@@ -176,6 +371,44 @@ export const allContent = [
     awards: ['4 Academy Awards', 'BAFTA Best Film Not in English'],
     rows: ['award-winners', 'trending'],
   },
+  {
+    id: 29,
+    title: 'A Blood Throne',
+    tagline: 'A crown inherited through murder. A legacy paid in blood.',
+    description:
+      'A young prince in ancient Israel witnesses the brutal murder of his eldest brothers at the hands of his own deranged father, King Herod. Now the boy stands as the sole successor to a violently contested throne — but in the house of Herod, survival and succession are never the same thing.',
+    type: 'streaming',
+    year: 2020,
+    rating: 'NR',
+    duration: '40m',
+    genre: ['Drama', 'Historical', 'Biblical'],
+    director: 'Xavier Garcia',
+    cast: ['Pierre Rumpf', 'Arissa Page', 'Danny Irizarry', 'Sean Archulet', 'Shahjehan Khan'],
+    poster: bloodThronePoster,
+    backdrop: bloodThroneHero,
+    matchScore: 94,
+    awards: ['WorldFest Houston Bronze Remi Award', 'Boston IFF Best Picture', '5 Festival Wins & 6 Nominations'],
+    rows: ['featured', 'award-winners', 'new-releases'],
+  },
+  {
+    id: 30,
+    title: 'Good',
+    tagline: 'In Salem, truth is the most dangerous thing of all.',
+    description:
+      'During the height of Salem\'s witch trials, a mysterious outsider arrives seeking justice — only to find himself trapped between the chaos of mob hysteria and his own haunted conscience. When the accused is a woman named Sarah Good, he must decide what he truly believes before the verdict is sealed.',
+    type: 'streaming',
+    year: 2024,
+    rating: 'NR',
+    duration: '15m',
+    genre: ['Drama', 'Historical', 'Short'],
+    director: 'Xavier Garcia',
+    cast: ['Nathan DeHoyos', 'Debby Gerber', 'Joe Siriani', 'Angie Ottosen Staheli', 'Jose Guns Alves'],
+    poster: goodPoster,
+    backdrop: goodHero,
+    matchScore: 92,
+    awards: [],
+    rows: ['featured', 'new-releases'],
+  },
   // ─── SERIES ─────────────────────────────────────────────────────────────────
   {
     id: 10,
@@ -192,7 +425,7 @@ export const allContent = [
     director: 'Jesse Armstrong',
     cast: ['Brian Cox', 'Jeremy Strong', 'Sarah Snook', 'Kieran Culkin'],
     poster: `${T}/z0XiwdrCQ9yVIr4O0pxzaAYRxdW.jpg`,
-    backdrop: `${TB}/l9C8jjqq4wz7BsGpFlb2GDEVYlX.jpg`,
+    backdrop: `https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&h=1080&fit=crop&crop=top`,
     matchScore: 99,
     awards: ['Emmy Award Best Drama', 'Golden Globe Best Drama'],
     rows: ['featured', 'trending', 'series'],
@@ -379,11 +612,7 @@ export const allContent = [
     fundingRaised: 89400,
     fundingBackers: 1243,
     fundingDaysLeft: 18,
-    rewardTiers: [
-      { amount: 25, title: 'Supporter', description: 'Early digital access + updates' },
-      { amount: 75, title: 'Producer Credit', description: 'Name in credits + signed poster' },
-      { amount: 500, title: 'Executive Associate', description: 'Premiere invite + private Q&A with director' },
-    ],
+    rewardTiers: stdTiers({ 25: 31, 50: 24, 100: 14, 250: 7, 1000: 3, 2000: 1, 5000: 0 }),
     rows: ['funding', 'trending'],
   },
   {
@@ -405,11 +634,7 @@ export const allContent = [
     fundingRaised: 198400,
     fundingBackers: 2810,
     fundingDaysLeft: 11,
-    rewardTiers: [
-      { amount: 30, title: 'Fan', description: 'HD download at release + newsletter' },
-      { amount: 100, title: 'Patron', description: 'Signed print + special thanks' },
-      { amount: 1000, title: 'Co-Producer', description: 'Set visit + producer credit + premiere tickets' },
-    ],
+    rewardTiers: stdTiers({ 25: 72, 50: 58, 100: 34, 250: 19, 1000: 7, 2000: 3, 5000: 1 }),
     rows: ['funding', 'trending', 'featured'],
   },
   {
@@ -431,11 +656,7 @@ export const allContent = [
     fundingRaised: 71400,
     fundingBackers: 987,
     fundingDaysLeft: 5,
-    rewardTiers: [
-      { amount: 20, title: 'Viewer', description: 'Streaming access at launch' },
-      { amount: 60, title: 'Collaborator', description: 'Behind-the-scenes doc + credit' },
-      { amount: 250, title: 'Field Producer', description: 'Iceland screening invite + all above' },
-    ],
+    rewardTiers: stdTiers({ 25: 25, 50: 20, 100: 12, 250: 6, 1000: 2, 2000: 1, 5000: 0 }),
     rows: ['funding'],
   },
   {
@@ -457,11 +678,7 @@ export const allContent = [
     fundingRaised: 42000,
     fundingBackers: 602,
     fundingDaysLeft: 34,
-    rewardTiers: [
-      { amount: 25, title: 'Seed', description: 'Digital access + project diary' },
-      { amount: 80, title: 'Cultivator', description: 'Name in credits + art book PDF' },
-      { amount: 400, title: 'Patron of the Arts', description: 'Signed print + Seoul premiere ticket' },
-    ],
+    rewardTiers: stdTiers({ 25: 15, 50: 12, 100: 7, 250: 3, 1000: 1, 2000: 0, 5000: 0 }),
     rows: ['funding', 'new-releases'],
   },
   {
@@ -483,11 +700,7 @@ export const allContent = [
     fundingRaised: 135000,
     fundingBackers: 1876,
     fundingDaysLeft: 42,
-    rewardTiers: [
-      { amount: 35, title: 'Wave', description: 'Digital premiere + updates from the field' },
-      { amount: 120, title: 'Current', description: 'Signed artisan fishing photo print + credits' },
-      { amount: 2500, title: 'Expedition Partner', description: 'Madagascar screening + expedition journal' },
-    ],
+    rewardTiers: stdTiers({ 25: 47, 50: 38, 100: 22, 250: 12, 1000: 4, 2000: 2, 5000: 0 }),
     rows: ['funding'],
   },
   {
@@ -547,12 +760,66 @@ export const allContent = [
     fundingRaised: 108000,
     fundingBackers: 1540,
     fundingDaysLeft: 3,
-    rewardTiers: [
-      { amount: 20, title: 'Neighbor', description: 'Early streaming access' },
-      { amount: 65, title: 'Friend of the Film', description: 'Digital + printed postcard set' },
-      { amount: 300, title: 'Founding Patron', description: 'Premiere invite + handwritten thank you from Tommy' },
-    ],
+    rewardTiers: stdTiers({ 25: 39, 50: 31, 100: 18, 250: 10, 1000: 3, 2000: 1, 5000: 0 }),
     rows: ['funding', 'trending'],
+  },
+  {
+    id: 34,
+    title: 'Eric Liddell: The Last Race',
+    tagline: 'The world knew the runner. China knew the man.',
+    description:
+      'The world remembers Eric Liddell as the man who wouldn\'t run on a Sunday. China remembers him as the man who stayed.\n\nWEIHSIEN follows Eric Liddell from his arrival in Japanese-occupied China through his capture and imprisonment in the Weihsien Internment Camp — where 1,800 civilians were crowded behind wire and slowly starved. Inside the camp he organized, taught, mediated, encouraged, and quietly refused to break. Not through defiance, but through something the other prisoners could not name and could not stop leaning on.\n\nHe died there in February 1945. Liberation came five months later.\n\nThis is not a film about a man who found faith. It is a film about what faith looks like when everything else has been taken away.',
+    type: 'funding',
+    year: 2025,
+    rating: 'NR',
+    duration: 'Feature Film',
+    genre: ['Historical Drama', 'War', 'Biography'],
+    director: 'TBD',
+    cast: ['Casting in progress'],
+    poster: ericPoster,
+    backdrop: ericHero,
+    fundingGoal: 850000,
+    fundingRaised: 178000,
+    fundingBackers: 2341,
+    fundingDaysLeft: 48,
+    rewardTiers: stdTiers({ 25: 58, 50: 44, 100: 28, 250: 15, 1000: 5, 2000: 2, 5000: 1 }),
+    updates: [
+      {
+        id: 2,
+        date: 'March 18, 2025',
+        title: '$175,000 Raised — A Word From the Director',
+        body: 'We are humbled. In less than three weeks, more than two thousand of you have stepped forward for this story — and we have crossed $175,000 raised.\n\nWe have begun preliminary conversations with a period production designer whose work you would recognize from several major British war films. We cannot say more yet. But the visual world of WEIHSIEN is coming into focus, and it is exactly what this story deserves.\n\nEric Liddell is not well known in the West outside of Chariots of Fire. That is one of the quiet tragedies of the 20th century. We intend to correct it.',
+        author: 'The Weihsien Team',
+        authorRole: 'Production',
+        images: null,
+        videoUrl: null,
+      },
+      {
+        id: 1,
+        date: 'March 1, 2025',
+        title: 'Why This Story. Why Now.',
+        body: 'Most people who know the name Eric Liddell know him from a single frame — a young man running with his head thrown back, arms churning, on a beach in France.\n\nFew know what came after. The decades in China. The marriage, the children, the schools, the war. The camp. The death at forty-three, six months before the liberation he never saw.\n\nWe have been living with this story for four years. We believe it is one of the great untold second acts in modern history — and that it belongs on screen, told with the full weight it deserves.\n\nThank you for being here at the beginning.',
+        author: 'The Weihsien Team',
+        authorRole: 'Production',
+        images: null,
+        videoUrl: null,
+      },
+    ],
+    backers: [
+      { name: 'Catherine W.',  tier: 'Founding Patron', amount: 1000, daysAgo: 1,  anonymous: false },
+      { name: null,            tier: 'Patron',          amount: 250,  daysAgo: 2,  anonymous: true  },
+      { name: 'Andrew M.',     tier: 'Keeper',          amount: 75,   daysAgo: 2,  anonymous: false },
+      { name: 'Ruth H.',       tier: 'Witness',         amount: 25,   daysAgo: 3,  anonymous: false },
+      { name: 'Peter S.',      tier: 'Founding Patron', amount: 1000, daysAgo: 4,  anonymous: false },
+      { name: null,            tier: 'Keeper',          amount: 75,   daysAgo: 5,  anonymous: true  },
+      { name: 'Grace L.',      tier: 'Patron',          amount: 250,  daysAgo: 6,  anonymous: false },
+      { name: 'James F.',      tier: 'Witness',         amount: 25,   daysAgo: 7,  anonymous: false },
+      { name: 'Helen T.',      tier: 'Keeper',          amount: 75,   daysAgo: 8,  anonymous: false },
+      { name: null,            tier: 'Patron',          amount: 250,  daysAgo: 9,  anonymous: true  },
+      { name: 'Robert C.',     tier: 'Founding Patron', amount: 1000, daysAgo: 11, anonymous: false },
+      { name: 'Fiona D.',      tier: 'Witness',         amount: 25,   daysAgo: 13, anonymous: false },
+    ],
+    rows: ['funding', 'featured', 'trending'],
   },
   // ─── MORE STREAMING ─────────────────────────────────────────────────────────
   {
@@ -672,11 +939,7 @@ export const allContent = [
     fundingRaised: 56000,
     fundingBackers: 721,
     fundingDaysLeft: 47,
-    rewardTiers: [
-      { amount: 25, title: 'Transmitter', description: 'Early access + production newsletter' },
-      { amount: 90, title: 'Signal', description: 'Name in credits + digital art print' },
-      { amount: 750, title: 'Network Node', description: 'Remote set access (video) + all cities premiere screenings' },
-    ],
+    rewardTiers: stdTiers({ 25: 18, 50: 14, 100: 8, 250: 4, 1000: 1, 2000: 0, 5000: 0 }),
     rows: ['funding', 'new-releases'],
   },
 ];
@@ -690,4 +953,8 @@ export const rows = [
   { id: 'new-releases',   label: 'New Releases',              filter: (c) => c.rows.includes('new-releases') },
 ];
 
-export const heroContent = allContent.find((c) => c.id === 27); // Pilgrim's Progress as hero
+export const heroContent = allContent.find((c) => c.id === 27); // kept for compat
+export const heroItems = [
+  allContent.find((c) => c.id === 27), // Pilgrim's Progress
+  allContent.find((c) => c.id === 31), // Douglass
+].filter(Boolean);

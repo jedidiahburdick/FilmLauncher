@@ -16,14 +16,17 @@
 }
 
 .hero__bg-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 20%;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 1.4s ease;
 }
-.hero__bg-img--loaded { opacity: 1; }
+/* --ready means it has loaded; --active means it is the current slide */
+.hero__bg-img--active { opacity: 1; }
 
 .hero__bg-fallback {
   width: 100%;
@@ -225,6 +228,51 @@
   gap: 5px;
   font-size: 11px;
   color: var(--text-3);
+}
+
+/* ── Slide indicators ─────────────────────────────────────────────────────── */
+.hero__indicators {
+  position: absolute;
+  bottom: 28px;
+  right: 64px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 3;
+}
+
+.hero__indicator {
+  position: relative;
+  height: 3px;
+  width: 28px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.28);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+}
+.hero__indicator:hover { background: rgba(255, 255, 255, 0.45); }
+
+.hero__indicator--active {
+  width: 56px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* The fill bar — key trick causes React to remount this on each slide change,
+   restarting the CSS animation automatically */
+.hero__indicator-fill {
+  position: absolute;
+  inset: 0;
+  background: white;
+  transform-origin: left center;
+  animation: indicatorFill 15s linear forwards;
+}
+
+@keyframes indicatorFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 @media (max-width: 768px) {
